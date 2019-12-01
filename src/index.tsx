@@ -12,7 +12,7 @@ function App() {
   return (
     
     <div className="App">
-      <h1>Hello CodeSandbox</h1>
+      <h1>Hello CodeSandbox Test</h1>
       <h2>Enter locations</h2>
       
     <DisplayItineraries/>
