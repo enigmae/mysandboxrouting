@@ -4,10 +4,10 @@ import { ISearchResult } from "./searchControl";
 import { Itinerary, IItinineraryResponse } from "./itinerary";
 import { SearchControl } from "./searchControl";
 interface IDisplayItinerariesState {
-  SearchResults: ISearchResult[];
-  Destination: ISearchResult;
-  ItineraryResponse: IItinineraryResponse;
-  DwellTime: number;
+  SearchResults?: ISearchResult[];
+  Destination?: ISearchResult;
+  ItineraryResponse?: IItinineraryResponse;
+  DwellTime?: number;
 }
 export class DisplayItineraries extends React.Component<
   {},
@@ -103,10 +103,10 @@ export class DisplayItineraries extends React.Component<
             //this.setState({ SearchResults:i});
             this.itinerary
               .getItinerary({
-                dwellTime: this.state.DwellTime,
+                dwellTime: this.state.DwellTime!,
                 searchResults: i,
-                startLocation: i[0].Coords,
-                endLocation: this.state.Destination.Coords
+                startLocation: i[0].Coords!,
+                endLocation: this.state.Destination!.Coords!
               })
               .then((i: IItinineraryResponse) => {
                 this.setState({ ItineraryResponse: i });
