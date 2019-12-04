@@ -1,8 +1,9 @@
 import * as React from "react";
 import { SearchCollection } from "./searchCollection";
 import { ISearchResult } from "./searchControl";
-import { Itinerary, IItinineraryResponse } from "./itinerary";
+import { Itinerary, IItinineraryResponse, instructionSet } from "./itinerary";
 import { SearchControl } from "./searchControl";
+import { InstructionControl } from "./instructionControl";
 interface IDisplayItinerariesState {
   SearchResults?: ISearchResult[];
   Destination?: ISearchResult;
@@ -27,57 +28,11 @@ export class DisplayItineraries extends React.Component<
       this.state &&
       this.state.ItineraryResponse &&
       this.state.ItineraryResponse.resourceSets
-    )
+    ){
       //TODO:Break this out into it's own control
-      responseList = this.state.ItineraryResponse.resourceSets[0].resources[0].agentItineraries[0].instructions.map(
-        i => {
-          let loc;
-          let place;
-          let endtime;
-          let duration;
-          if (i.itineraryItem) {
-            loc =
-              "Location:(" +
-              i.itineraryItem.location.latitude +
-              ", " +
-              i.itineraryItem.location.longitude +
-              ")";
-            if (i.itineraryItem.name) {
-              place = (
-                <span>
-                  <b>Place:</b>
-                  <label>{i.itineraryItem.name}</label>
-                </span>
-              );
-            }
-          }
-          if (i.endTime) {
-            endtime = (
-              <span>
-                <b>EndTime:</b> {i.endTime}
-              </span>
-            );
-          }
-          if (i.duration) {
-            duration = (
-              <span>
-                {" "}
-                <b>Duration:</b>
-                {i.duration}
-              </span>
-            );
-          }
-          return (
-            <li key={i.startTime + i.instructionType}>
-              <b>Start:</b>
-              {i.startTime} {place}
-              <br />
-              <b> Type:</b>
-              {i.instructionType} {endtime} {duration}
-            </li>
-          );
-        }
-      );
+      responseList  = <InstructionControl instructions=
+        {new instructionSet(this.state.ItineraryResponse.resourceSets[0].resources[0].agentItineraries[0].instructions)}/>;
+    }
     return (
       <div>
         <div>

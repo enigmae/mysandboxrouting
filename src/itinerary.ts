@@ -1,5 +1,8 @@
 import * as request from "request-promise";
 import { ISearchResult, ILatLong } from "./searchControl";
+import * as dateMath from 'date-arithmetic';
+import dateDiff from 'date-diff'; 
+import { setupMaster } from "cluster";
 export interface location {
   latitude: number;
   longitude: number;
@@ -46,6 +49,28 @@ export interface instruction {
   startTime: string;
   endTime: string;
   duration: string;
+}
+export class instructionSet{
+  constructor(public instructions:instruction[]){
+    this.distance = this.calcdistance();
+    this.durationMinutes = this.calcMinutes();
+  }
+  distance:number;
+  durationMinutes:number;
+  calcdistance(){
+    let sum =0;
+    for(let i = 0; i<this.instructions.length;i++){
+      sum+=this.instructions[i].distance;
+    }
+    return sum;
+  }
+  calcMinutes(){
+   let diff = new dateDiff(new Date(this.instructions[0].startTime), new Date(this.instructions[this.instructions.length-1].endTime));
+
+    // let minutes = dateMath.subtract(new Date(this.instructions[0].startTime), new Date(this.instructions[this.instructions.length-1].endTime), "minutes");
+    //return minutes;
+  return diff.minutes();
+  }
 }
 export interface agentItinerary {
   agent: agent;
