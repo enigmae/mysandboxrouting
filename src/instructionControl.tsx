@@ -1,11 +1,11 @@
 import * as React from "react";
-import { instruction, instructionSet } from "./itinerary";
+import { instruction, instructionSet } from "./Services/itinerary";
 export interface InstructionControlProps{
     instructions:instructionSet
 }
 export class InstructionControl extends React.Component<InstructionControlProps>{
     render(){
-        return this.props.instructions.instructions.map(
+        let instructionRenders = this.props.instructions.instructions.map(
             i => {
               let loc;
               let place;
@@ -54,5 +54,8 @@ export class InstructionControl extends React.Component<InstructionControlProps>
               );
             }
           );
+        return <div>Total time:{this.props.instructions.durationMinutes} minutes
+    <div>{instructionRenders}</div>
+        </div>
     }
 }

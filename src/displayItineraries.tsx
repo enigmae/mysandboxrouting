@@ -1,9 +1,11 @@
 import * as React from "react";
 import { SearchCollection } from "./searchCollection";
 import { ISearchResult } from "./searchControl";
-import { Itinerary, IItinineraryResponse, instructionSet } from "./itinerary";
+import { IItinineraryResponse, instructionSet, IItineraryService } from "./Services/itinerary";
 import { SearchControl } from "./searchControl";
 import { InstructionControl } from "./instructionControl";
+import { InstructionSummaryControl } from "./Controls/instructionSummaryControl";
+import { ItineraryService } from "./Services/ItineraryService";
 interface IDisplayItinerariesState {
   SearchResults?: ISearchResult[];
   Destination?: ISearchResult;
@@ -16,12 +18,12 @@ export class DisplayItineraries extends React.Component<
 > {
   constructor(props) {
     super(props);
-    this.itinerary = new Itinerary();
+    this.itinerary = new ItineraryService();
     this.handleDestinationChanged = this.handleDestinationChanged.bind(this);
     this.state = { DwellTime: 15 };
     this.handleDwellTimeChanged = this.handleDwellTimeChanged.bind(this);
   }
-  itinerary: Itinerary;
+  itinerary: IItineraryService;
   render() {
     let responseList;
     if (
@@ -30,8 +32,8 @@ export class DisplayItineraries extends React.Component<
       this.state.ItineraryResponse.resourceSets
     ){
       //TODO:Break this out into it's own control
-      responseList  = <InstructionControl instructions=
-        {new instructionSet(this.state.ItineraryResponse.resourceSets[0].resources[0].agentItineraries[0].instructions)}/>;
+      responseList  = <InstructionSummaryControl instructionSet=
+        {this.state.ItineraryResponse.instructionSets[0]}/>;
     }
     return (
       <div>
