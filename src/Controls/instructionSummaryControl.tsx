@@ -1,7 +1,8 @@
 import * as React from 'react';
 import { instructionSet } from '../Services/itinerary';
 import { totalmem } from 'os';
-
+import { InstructionControl } from '../instructionControl';
+import Collapsible from 'react-collapsible';
 export interface IInstructionSummaryControlProps{
     instructionSet:instructionSet;
 }
@@ -10,13 +11,14 @@ export interface IInstructionSummaryControlState{
     totalHours:number;
     totalMinutes:number;
     totalDistance:number;
+    startingPoint:string;
 }
 export class InstructionSummaryControl extends React.Component<IInstructionSummaryControlProps, IInstructionSummaryControlState>{
     constructor(props){
         super(props);
         let collapsed ={collapsed:true};
  
-        this.state = {...collapsed, ...this.calculateState()};
+        this.state = {...collapsed, ...this.calculateState(), startingPoint:this.props.instructionSet.instructions[2].itineraryItem.name};
     }
     calculateState(){
         let calc = {totalHours:Math.floor(this.props.instructionSet.durationMinutes/60), 
@@ -30,9 +32,9 @@ export class InstructionSummaryControl extends React.Component<IInstructionSumma
             }
         }
     render(){
-        let showExpand = 
-        return <div>
-            Total Time:{this.state.totalHours} hrs {this.state.totalMinutes.toFixed()} min Total Distance:{this.props.instructionSet.distance.toFixed(1)} mi
-        </div>;
+        let fullSummary = `Total Time:${this.state.totalHours} hrs ${this.state.totalMinutes.toFixed()} min Total Distance:${this.props.instructionSet.distance.toFixed(1)} mi Starting Point:${this.props.instructionSet.instructions[2].itineraryItem.name}`;
+        return <Collapsible trigger={fullSummary}>
+            <InstructionControl instructions={this.props.instructionSet}/>
+        </Collapsible>;
     }
 }

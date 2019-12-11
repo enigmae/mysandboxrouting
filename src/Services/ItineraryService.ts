@@ -1,7 +1,7 @@
 import * as request from "request-promise";
-import { IItineraryService, getIntineraryRequest, IItinineraryResponse, itineraryItem, ItineraryRequest, ItinineraryResponse } from "./itinerary";
+import { IItineraryService, getItineraryRequest, IItinineraryResponse, itineraryItem, ItineraryRequest, ItinineraryResponse } from "./itinerary";
 export class ItineraryService implements IItineraryService {
-  async getItinerary(getItineraryRequest: getIntineraryRequest): Promise<IItinineraryResponse> {
+  async getItinerary(getItineraryRequest: getItineraryRequest): Promise<IItinineraryResponse> {
     var itineraryItems = getItineraryRequest.searchResults.map(sr => new itineraryItem(sr.SearchResult!, "00:" + getItineraryRequest.dwellTime + ":00", {
       latitude: sr.Coords!.Lat,
       longitude: sr.Coords!.Long

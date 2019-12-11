@@ -105,7 +105,7 @@ export class ItineraryRequest implements IItineraryRequest {
     public itineraryItems: IitineraryItem[]
   ) {}
 }
-export interface getIntineraryRequest {
+export interface getItineraryRequest {
   searchResults: ISearchResult[];
   startLocation: ILatLong;
   endLocation: ILatLong;
@@ -113,14 +113,14 @@ export interface getIntineraryRequest {
 }
 export interface IItineraryService{
   getItinerary(
-    getItineraryRequest: getIntineraryRequest
+    getItineraryRequest: getItineraryRequest
   ): Promise<IItinineraryResponse>;
 }
-export interface getItinerariesRequest {
+export interface ItinerariesRequest {
   searchResults: ISearchResult[];
   endLocation: ILatLong;
   dwellTime: number;
 }
-export interface getItinerariesResponse {
+export interface ItinerariesResponse {
   itineraries:IItinineraryResponse[];
 }

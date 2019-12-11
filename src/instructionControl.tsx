@@ -55,7 +55,7 @@ export class InstructionControl extends React.Component<InstructionControlProps>
             }
           );
         return <div>Total time:{this.props.instructions.durationMinutes} minutes
-    <div>{instructionRenders}</div>
+    <ol>{instructionRenders}</ol>
         </div>
     }
 }
