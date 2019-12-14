@@ -11,6 +11,10 @@ export class ItineraryService implements IItineraryService {
       latitude: getItineraryRequest.endLocation.Lat,
       longitude: getItineraryRequest.endLocation.Long
     }, '2019-11-16T16:00:00', '2019-11-16T18:00:00'));*/
+    let startTime = getItineraryRequest.startTime==undefined? "2019-11-16T08:00:00" : dateformat(getItineraryRequest.startTime, 'yyyy-mm-ddThh:MM:ss');
+    let endTime = getItineraryRequest.endTime==undefined?"2019-11-16T18:00:00" : dateformat(getItineraryRequest.endTime, 'yyyy-mm-ddThh:MM:ss');
+    startTime = startTime.replace('P', 'T').replace('A','T');
+    endTime = endTime.replace('P', 'T').replace('A','T');
     var result = await request.post("https://dev.virtualearth.net/REST/V1/Routes/OptimizeItinerary?key=ArLJodQ7fEaQ2dfy3lIHWJrJILC35_Qj0EpT8TCy3ls96pl6sqCdlu18bo8j_tbM", {
       resolveWithFullResponse: false,
       json: new ItineraryRequest([
@@ -18,8 +22,8 @@ export class ItineraryService implements IItineraryService {
           name: "Kayode",
           shifts: [
             {
-              startTime: getItineraryRequest.startTime==undefined? "2019-11-16T08:00:00" : dateformat(getItineraryRequest.startTime, 'yyyy-mm-ddThh:MM:ss'),
-              endTime: getItineraryRequest.endTime==undefined?"2019-11-16T18:00:00" : dateformat(getItineraryRequest.endTime, 'yyyy-mm-ddThh:MM:ss'),
+              startTime: startTime,
+              endTime: endTime,
               endLocation: {
                 latitude: getItineraryRequest.endLocation.Lat,
                 longitude: getItineraryRequest.endLocation.Long

@@ -1,10 +1,10 @@
 import * as React from "react";
-import { instruction, instructionSet } from "./Services/itinerary";
+import { instruction, instructionSet } from "../Services/itinerary";
 import * as linq from "linq";
 export interface InstructionControlProps{
     instructions:instructionSet
 }
-export class InstructionControl extends React.Component<InstructionControlProps>{
+export class ItineraryInstructionsControl extends React.Component<InstructionControlProps>{
     render(){
       
         let instructionRenders = linq.from(this.props.instructions.instructions).skip(2).toArray().map(

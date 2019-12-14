@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { instructionSet } from '../Services/itinerary';
 import { totalmem } from 'os';
-import { InstructionControl } from '../instructionControl';
+import { ItineraryInstructionsControl } from './itineraryInstructionsControl';
 import Collapsible from 'react-collapsible';
 export interface IInstructionSummaryControlProps{
     instructionSet:instructionSet;
@@ -34,7 +34,7 @@ export class InstructionSummaryControl extends React.Component<IInstructionSumma
     render(){
         let fullSummary = `Total Time:${this.state.totalHours} hrs ${this.state.totalMinutes.toFixed()} min Total Distance:${this.props.instructionSet.distance.toFixed(1)} mi Starting Point:${this.props.instructionSet.instructions[2].itineraryItem.name}`;
         return <Collapsible trigger={fullSummary}>
-            <InstructionControl instructions={this.props.instructionSet}/>
+            <ItineraryInstructionsControl instructions={this.props.instructionSet}/>
         </Collapsible>;
     }
 }

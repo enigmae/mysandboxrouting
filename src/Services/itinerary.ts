@@ -1,4 +1,4 @@
-import { ISearchResult, ILatLong, ISearchParam } from "../searchControl";
+import { ISearchResult, ILatLong, ISearchParam } from "../Controls/searchControl";
 import dateDiff from 'date-diff'; 
 import { setupMaster } from "cluster";
 export interface location {
@@ -60,6 +60,9 @@ export class instructionSet{
   }
   agent:agent;
   instructions:instruction[];
+  get startingPoint():string{
+    return this.instructions[2].itineraryItem.name;
+  }
   distance:number;
   durationMinutes:number;
   private calcdistance(){
@@ -113,8 +116,8 @@ export interface getItineraryRequest {
   startLocation: ILatLong;
   endLocation: ILatLong;
   dwellTime: number;
-  startTime:Date;
-  endTime:Date;
+  startTime?:Date;
+  endTime?:Date;
 }
 export interface IItineraryService{
   getItinerary(

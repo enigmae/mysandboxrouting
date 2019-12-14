@@ -1,10 +1,10 @@
 import * as React from "react";
 import { render } from "react-dom";
 //import { SearchControl } from "./searchControl";
-import { SearchCollection } from "./searchCollection";
+import { SearchCollectionControl } from "./Controls/searchCollectionControl";
 import { MapsControl } from "./mapsContol";
-import { ISearchResult } from "./searchControl";
-import { DisplayItineraries } from "./displayItineraries";
+import { ISearchResult } from "./Controls/searchControl";
+import { EnterLocationsControl } from "./Controls/enterLocationsControl";
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
       <h1>Hello CodeSandbox Test</h1>
       <h2>Enter locations</h2>
       
-    <DisplayItineraries/>
+    <EnterLocationsControl/>
     </div>
   );
 }
