@@ -1,16 +1,20 @@
 import * as React from "react";
 import { instruction, instructionSet } from "./Services/itinerary";
+import * as linq from "linq";
 export interface InstructionControlProps{
     instructions:instructionSet
 }
 export class InstructionControl extends React.Component<InstructionControlProps>{
     render(){
-        let instructionRenders = this.props.instructions.instructions.map(
+      
+        let instructionRenders = linq.from(this.props.instructions.instructions).skip(2).toArray().map(
             i => {
               let loc;
               let place;
               let endtime;
               let duration;
+              //if(i.instructionType!="TravelBetweenLocations")
+              //    return;
               if (i.itineraryItem) {
                 loc =
                   "Location:(" +

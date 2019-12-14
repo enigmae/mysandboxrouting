@@ -10,7 +10,7 @@ export class ItineraryCollectionService implements IItineraryCollectionService{
     let response = new Array<IItinineraryResponse>();
     for (let result of getItinerariesRequest.searchResults) {
       let itinerary = await this.itinerary.getItinerary({
-        startLocation: result.Coords!, searchResults: getItinerariesRequest.searchResults,
+        startLocation: result.Coords!, searchParams: getItinerariesRequest.searchResults,
         dwellTime: getItinerariesRequest.dwellTime, endLocation: getItinerariesRequest.endLocation
       });
       response.push(itinerary);

@@ -1,4 +1,4 @@
-import { ISearchResult, ILatLong } from "../searchControl";
+import { ISearchResult, ILatLong, ISearchParam } from "../searchControl";
 import dateDiff from 'date-diff'; 
 import { setupMaster } from "cluster";
 export interface location {
@@ -6,8 +6,8 @@ export interface location {
   longitude: number;
 }
 export interface shift {
-  startTime: string;
-  endTime: string;
+  startTime?: string;
+  endTime?: string;
   startLocation: location;
   endLocation: location;
 }
@@ -20,7 +20,10 @@ export class itineraryItem implements IitineraryItem {
   constructor(
     public name: string,
     public dwellTime: string,
-    public location: location
+    public location: location,
+    public openingTime?:string,
+    public closingTime?:string,
+    public startingTime?:string
   ) {}
 }
 export interface agent {
@@ -106,10 +109,12 @@ export class ItineraryRequest implements IItineraryRequest {
   ) {}
 }
 export interface getItineraryRequest {
-  searchResults: ISearchResult[];
+  searchParams: ISearchParam[];
   startLocation: ILatLong;
   endLocation: ILatLong;
   dwellTime: number;
+  startTime:Date;
+  endTime:Date;
 }
 export interface IItineraryService{
   getItinerary(
@@ -117,7 +122,7 @@ export interface IItineraryService{
   ): Promise<IItinineraryResponse>;
 }
 export interface ItinerariesRequest {
-  searchResults: ISearchResult[];
+  searchResults: ISearchParam[];
   endLocation: ILatLong;
   dwellTime: number;
 }

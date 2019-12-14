@@ -7,12 +7,15 @@ import { InstructionControl } from "./instructionControl";
 import { InstructionSummaryControl } from "./Controls/instructionSummaryControl";
 import { ItineraryService } from "./Services/ItineraryService";
 import { ItineraryCollectionService } from "./Services/ItineraryCollectionService";
+import DateTimePicker from "react-datetime-picker";
+import * as dateMath from 'date-arithmetic';
 interface IDisplayItinerariesState {
   SearchResults?: ISearchResult[];
   Destination?: ISearchResult;
   ItineraryResponse?: IItinineraryResponse;
   ItinerariesResponse?:ItinerariesResponse; 
   DwellTime?: number;
+  Arrivaltime?:Date;
 }
 export class DisplayItineraries extends React.Component<
   {},
@@ -23,11 +26,15 @@ export class DisplayItineraries extends React.Component<
     this.itinerary = new ItineraryService();
     this.itineraryCollection = new ItineraryCollectionService(this.itinerary);
     this.handleDestinationChanged = this.handleDestinationChanged.bind(this);
-    this.state = { DwellTime: 15 };
+    let endOfToday = dateMath.endOf(new Date(),'day');
+    let ninePm = dateMath.add(endOfToday, 20, "hours");
+    let subtractDay = dateMath.add(ninePm, -1, "day");
+    this.state = { DwellTime: 15, Arrivaltime: dateMath.add(subtractDay, 1, "minutes")};
     this.handleDwellTimeChanged = this.handleDwellTimeChanged.bind(this);
     this.handleSingleItinerarySearch = this.handleSingleItinerarySearch.bind(this);
     this.handleMultipleItinerarySearch = this.handleMultipleItinerarySearch.bind(this);
     this.handleSearchItineraries = this.handleSearchItineraries.bind(this);
+    this.handleArrivalTimeChanged = this.handleArrivalTimeChanged.bind(this);
   }
   itineraryCollection: ItineraryCollectionService;
   itinerary: IItineraryService;
@@ -71,6 +78,14 @@ export class DisplayItineraries extends React.Component<
             onChange={this.handleDwellTimeChanged}
           />
         </div>
+        <div>
+          Enter arrival time:
+          <br />
+          <DateTimePicker
+            value={this.state.Arrivaltime}
+            onChange={this.handleArrivalTimeChanged}
+          />
+        </div>
         <SearchCollection
           handleSearchCollectionChanged={this.handleMultipleItinerarySearch}
         />
@@ -80,11 +95,14 @@ export class DisplayItineraries extends React.Component<
       </div>
     );
   }
+  handleArrivalTimeChanged(date:Date){
+    this.setState({Arrivaltime:date});
+  }
   handleSingleItinerarySearch(searchResults:ISearchResult[]){
     this.itinerary
               .getItinerary({
                 dwellTime: this.state.DwellTime!,
-                searchResults: searchResults,
+                searchParams: searchResults,
                 startLocation: searchResults[0].Coords!,
                 endLocation: this.state.Destination!.Coords!
               })
@@ -100,10 +118,17 @@ export class DisplayItineraries extends React.Component<
       dwellTime: this.state.DwellTime!,
       searchResults: this.state.SearchResults!,
       endLocation: this.state.Destination!.Coords!
-    }).then((i: ItinerariesResponse) => {
+    })
+    .then((i: ItinerariesResponse) => {
+      this.itineraryCollection.getItineraries({
+        dwellTime: this.state.DwellTime!,
+        searchResults: this.state.SearchResults!,
+        endLocation: this.state.Destination!.Coords!
+      })
+    .then((i: ItinerariesResponse) => {
       this.setState({ ItinerariesResponse: i });
     })
-  }
+  });}
   handleDestinationChanged(e: ISearchResult) {
     console.log("handle destination changed:" + JSON.stringify(e));
     this.setState({ Destination: e });

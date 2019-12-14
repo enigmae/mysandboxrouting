@@ -34,6 +34,10 @@ export interface ISearchResult {
   SearchQuery: string;
   Coords?: ILatLong;
 }
+export interface ISearchParam extends ISearchResult{
+  endTime?:Date;
+  startTime?:Date;
+}
 export interface ISearchControlProps {
   searchResultsChanged: (arg0: ISearchResult) => void;
   SearchResult: ISearchResult;
