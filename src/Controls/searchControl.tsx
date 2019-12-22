@@ -141,11 +141,14 @@ export class SearchControl extends React.Component<
     let searchResult;
     if (this.state.SearchResultVisible) {
       searchResult = (
+        <div>
         <input type="text" value={this.state.SearchResult} readOnly={true} />
-      );
+        <br/>
+        </div>
+        );
     }
     return (
-      <div>
+      <span>
         <input
           type="text"
           value={this.state.SearchQuery}
@@ -155,10 +158,8 @@ export class SearchControl extends React.Component<
           readOnly={this.state.Submitted}
           ref={input => (this.inputElement = input)}
         />
-        <br />
         {searchResult}
-        <br />
-      </div>
+        </span>
     );
   }
 }

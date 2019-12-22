@@ -25,14 +25,22 @@ export class SearchCollectionControl extends React.Component<
   render() {
     const blankitem = (
       <li>
-        <SearchControl
+        <table>
+          <td></td>
+          <td></td>
+        </table>
+        <tr>
+         <SearchControl
           SearchResult={{
             SearchQuery: "",
             SearchResult: undefined
           }}
           searchResultsChanged={this.handleSearchResultChanged}
         />
-      </li>
+        <div style={{display:"inline-block"}}>
+        <label># Riders</label><input/>
+        </div></tr>
+        </li>
     );
     const items = [blankitem];
     for (let search of this.state.SearchResults) {
