@@ -1,27 +1,16 @@
-import { SearchControl, ISearchResult } from "./searchControl";
+import { EnterLocationControl, ISearchResult, ISearchParam } from "./enterLocationControl";
 import * as React from "react";
-interface ISearchCollectionState {
-  SearchResults: ISearchResult[];
-}
-export interface ISearchCollectionProps {
-  handleSearchCollectionChanged: (searchResults: ISearchResult[]) => void;
-}
+
 export class SearchCollectionControl extends React.Component<
-  ISearchCollectionProps,
-  ISearchCollectionState
+ 
 > {
   constructor(props: Readonly<ISearchCollectionProps>) {
     super(props);
     this.handleSearchResultChanged = this.handleSearchResultChanged.bind(this);
-    this.state = { SearchResults: [] };
+    this.state = { SearchResults: [], NumRiders:0 };
   }
 
-  handleSearchResultChanged(e: ISearchResult) {
-    console.log("handleSearchResultsChanged ");
-    this.state.SearchResults.push(e);
-    this.setState({ SearchResults: this.state.SearchResults });
-    this.props.handleSearchCollectionChanged(this.state.SearchResults);
-  }
+
   render() {
     const blankitem = (
       <li>
@@ -30,7 +19,7 @@ export class SearchCollectionControl extends React.Component<
           <td></td>
         </table>
         <tr>
-         <SearchControl
+         <EnterLocationControl
           SearchResult={{
             SearchQuery: "",
             SearchResult: undefined
@@ -38,7 +27,7 @@ export class SearchCollectionControl extends React.Component<
           searchResultsChanged={this.handleSearchResultChanged}
         />
         <div style={{display:"inline-block"}}>
-        <label># Riders</label><input/>
+        <label className="RidersLabel"># Riders</label><input className="Riders" value={this.state.NumRiders}/>
         </div></tr>
         </li>
     );

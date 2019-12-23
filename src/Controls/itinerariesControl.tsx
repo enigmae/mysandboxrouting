@@ -8,7 +8,6 @@ interface ItinerariesControlState{
 }
 export interface ItinerariesControlProps{
     ItinerariesResponse?:ItinerariesResponse;
-    ReadjustForArrival:(date:Date)=>void; 
 }
 export class ItinerariesControl extends React.Component<ItinerariesControlProps,ItinerariesControlState>{
     constructor(props){
@@ -19,8 +18,7 @@ export class ItinerariesControl extends React.Component<ItinerariesControlProps,
      
         this.state = {  Arrivaltime: dateMath.add(subtractDay, 1, "minutes")};
         this.handleArrivalTimeChanged = this.handleArrivalTimeChanged.bind(this);
-        this.handleReadjustForArrivalClicked = this.handleReadjustForArrivalClicked.bind(this);
-    }
+     }
     handleArrivalTimeChanged(date:Date){
         this.setState({Arrivaltime:date});
       }
@@ -32,18 +30,9 @@ render(){
         <li><InstructionSummaryControl instructionSet = {m.instructionSets[0]}/></li>);
          responseList = <ol>{instructionList}</ol>;
     return <div>
-         Enter arrival time:
-    <br />
-    <DateTimePicker
-      value={this.state.Arrivaltime}
-      onChange={this.handleArrivalTimeChanged}
-    /><button style={{marginLeft:10}} onClick={this.handleReadjustForArrivalClicked}>Readjust for Arrival Time</button>
         <h1>Itineraries:</h1>
         <ol>{responseList}</ol>
-   
   </div>
 }
-handleReadjustForArrivalClicked(){
-    this.props.ReadjustForArrival(this.state.Arrivaltime);
-}
+
 }

@@ -5,6 +5,12 @@ input {
   width: 300px;
   vertical-align: left;
 }
+.Riders{
+  width:20px
+}
+.RidersLabel{
+  margin-left:20px
+}
 .Collapsible {
   background-color: white; }
 

@@ -1,4 +1,4 @@
-import { ISearchResult, ILatLong, ISearchParam } from "../Controls/searchControl";
+import { ISearchResult, ILatLong, ISearchParam } from "../Controls/enterLocationControl";
 import dateDiff from 'date-diff'; 
 import { setupMaster } from "cluster";
 export interface location {

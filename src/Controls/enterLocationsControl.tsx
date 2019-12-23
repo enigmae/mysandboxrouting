@@ -1,8 +1,8 @@
 import * as React from "react";
 import { SearchCollectionControl } from "./searchCollectionControl";
-import { ISearchResult, ISearchParam } from "./searchControl";
+import { ISearchResult, ISearchParam } from "./enterLocationControl";
 import { IItinineraryResponse, instructionSet, IItineraryService, ItinerariesResponse } from "../Services/itinerary";
-import { SearchControl } from "./searchControl";
+import { EnterLocationControl } from "./enterLocationControl";
 import { ItineraryInstructionsControl } from "./itineraryInstructionsControl";
 import { InstructionSummaryControl } from "./instructionSummaryControl";
 import { ItineraryService } from "../Services/ItineraryService";
@@ -16,6 +16,7 @@ interface IDisplayItinerariesState {
   ItineraryResponse?: IItinineraryResponse;
   ItinerariesResponse?:ItinerariesResponse; 
   DwellTime?: number;
+  Arrivaltime:Date;
 }
 export class EnterLocationsControl extends React.Component<
   {},
@@ -26,12 +27,19 @@ export class EnterLocationsControl extends React.Component<
     this.itinerary = new ItineraryService();
     this.itineraryCollection = new ItineraryCollectionService(this.itinerary);
     this.handleDestinationChanged = this.handleDestinationChanged.bind(this);
-      this.state = { DwellTime: 15};
+
+    this.state = { DwellTime: 15, Arrivaltime: this.initializeArrivalTime()};
     this.handleDwellTimeChanged = this.handleDwellTimeChanged.bind(this);
-    this.handleSingleItinerarySearch = this.handleSingleItinerarySearch.bind(this);
+    //this.handleSingleItinerarySearch = this.handleSingleItinerarySearch.bind(this);
     this.handleMultipleItinerarySearch = this.handleMultipleItinerarySearch.bind(this);
     this.handleSearchItineraries = this.handleSearchItineraries.bind(this);
     this.handleReadjustForArrival = this.handleReadjustForArrival.bind(this);
+  }
+  initializeArrivalTime(){
+    let endOfToday = dateMath.endOf(new Date(),'day');
+    let ninePm = dateMath.add(endOfToday, 20, "hours");
+    let subtractDay = dateMath.add(ninePm, -1, "day");
+    return dateMath.add(subtractDay, 1, "minutes");
   }
   itineraryCollection: ItineraryCollectionService;
   itinerary: IItineraryService;
@@ -59,13 +67,14 @@ export class EnterLocationsControl extends React.Component<
       <div>
         <div>
           Enter destination:
-          <SearchControl
+          <div>
+          <EnterLocationControl
             SearchResult={{
               SearchQuery: "",
               SearchResult: undefined
             }}
             searchResultsChanged={this.handleDestinationChanged}
-          />
+          /></div>
         </div>
         <div>
           Enter dwell time:
@@ -75,14 +84,22 @@ export class EnterLocationsControl extends React.Component<
             onChange={this.handleDwellTimeChanged}
           />
         </div>
-        
+         Enter arrival time:
+    <br />
+    <DateTimePicker
+      value={this.state.Arrivaltime}
+      onChange={this.handleArrivalTimeChanged}
+    />
         <SearchCollectionControl
           handleSearchCollectionChanged={this.handleMultipleItinerarySearch}
         />
         <button  onClick={this.handleSearchItineraries}>Search</button>
-       <ItinerariesControl ItinerariesResponse={this.state.ItinerariesResponse} ReadjustForArrival={this.handleReadjustForArrival}/>
+       <ItinerariesControl ItinerariesResponse={this.state.ItinerariesResponse}/>
       </div>
     );
+  }
+  handleArrivalTimeChanged(date:Date){
+    this.setState({Arrivaltime:date});
   }
   searchResultHashmap={};
   handleReadjustForArrival(date:Date){
@@ -95,6 +112,7 @@ export class EnterLocationsControl extends React.Component<
     });
     this.handleSearchItineraries();
   }
+  /*
   handleSingleItinerarySearch(searchResults:ISearchResult[]){
     this.itinerary
               .getItinerary({
@@ -109,7 +127,7 @@ export class EnterLocationsControl extends React.Component<
                   this.searchResultHashmap[is.startingPoint] = is.durationMinutes;
                 });
               });
-            }
+            }*/
   handleMultipleItinerarySearch(searchResults:ISearchResult[]){
     this.setState({SearchResults:searchResults});
   }
@@ -124,7 +142,9 @@ export class EnterLocationsControl extends React.Component<
       i.itineraries.forEach(it=>{it.instructionSets.forEach(is=>{
         this.searchResultHashmap[is.startingPoint] = is.durationMinutes;
       });});
-    })
+    }).then(()=>{
+      this.handleReadjustForArrival(this.state.Arrivaltime);
+    });
   }
   handleDestinationChanged(e: ISearchResult) {
     console.log("handle destination changed:" + JSON.stringify(e));

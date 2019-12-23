@@ -3,7 +3,7 @@ import { render } from "react-dom";
 //import { SearchControl } from "./searchControl";
 import { SearchCollectionControl } from "./Controls/searchCollectionControl";
 import { MapsControl } from "./mapsContol";
-import { ISearchResult } from "./Controls/searchControl";
+import { ISearchResult } from "./Controls/enterLocationControl";
 import { EnterLocationsControl } from "./Controls/enterLocationsControl";
 
 function App() {

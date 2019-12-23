@@ -17,7 +17,7 @@ async function getBingMapsResponse(query: string): Promise<IResource> {
   return response.result!.resourceSets[0].resources[0];
 }
 
-interface ISearchState {
+interface IEnterLocationState {
   SearchQuery: string;
   SearchResult: string;
   SearchResultVisible: boolean;
@@ -37,16 +37,17 @@ export interface ISearchResult {
 export interface ISearchParam extends ISearchResult{
   endTime?:Date;
   startTime?:Date;
+  riders?:number;
 }
-export interface ISearchControlProps {
+export interface IEnterLocationControlProps {
   searchResultsChanged: (arg0: ISearchResult) => void;
   SearchResult: ISearchResult;
 }
-export class SearchControl extends React.Component<
-  ISearchControlProps,
-  ISearchState
+export class EnterLocationControl extends React.Component<
+  IEnterLocationControlProps,
+  IEnterLocationState
 > {
-  constructor(props: Readonly<ISearchControlProps>) {
+  constructor(props: Readonly<IEnterLocationControlProps>) {
     super(props);
     this.handleSearchChanged = this.handleSearchChanged.bind(this);
     this.handleSearchBlur = this.handleSearchBlur.bind(this);
