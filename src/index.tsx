@@ -1,7 +1,7 @@
 import * as React from "react";
 import { render } from "react-dom";
 //import { SearchControl } from "./searchControl";
-import { SearchCollectionControl } from "./Controls/searchCollectionControl";
+import { LocationRiderCollectionControl } from "./Controls/locationRiderCollectionControl";
 import { MapsControl } from "./mapsContol";
 import { ISearchResult } from "./Controls/enterLocationControl";
 import { EnterLocationsControl } from "./Controls/enterLocationsControl";

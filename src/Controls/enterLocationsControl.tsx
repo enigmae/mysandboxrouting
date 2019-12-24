@@ -1,5 +1,5 @@
 import * as React from "react";
-import { SearchCollectionControl } from "./searchCollectionControl";
+import { LocationRiderCollectionControl } from "./locationRiderCollectionControl";
 import { ISearchResult, ISearchParam } from "./enterLocationControl";
 import { IItinineraryResponse, instructionSet, IItineraryService, ItinerariesResponse } from "../Services/itinerary";
 import { EnterLocationControl } from "./enterLocationControl";
@@ -90,7 +90,7 @@ export class EnterLocationsControl extends React.Component<
       value={this.state.Arrivaltime}
       onChange={this.handleArrivalTimeChanged}
     />
-        <SearchCollectionControl
+        <locationRiderCollectionControl
           handleSearchCollectionChanged={this.handleMultipleItinerarySearch}
         />
         <button  onClick={this.handleSearchItineraries}>Search</button>

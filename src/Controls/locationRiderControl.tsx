@@ -1,36 +1,60 @@
 import * as React from 'react';
 import { EnterLocationControl, ISearchParam, ISearchResult } from './enterLocationControl';
-interface ISearchCollectionState {
-    SearchResults: ISearchParam[];
-    NumRiders:number;
+import { ILocation } from '../bing';
+export interface ILocationRider {
+    SearchResult?: string;
+    NumRiders?:number;
   }
-  export interface ISearchCollectionProps {
-    handleSearchCollectionChanged: (searchResults: ISearchResult[]) => void;
+  export interface ILocationRiderControlState extends ILocationRider{
+    SubmitEnabled:boolean;
+    Submitted:boolean;
   }
-export class LocationRiderControl extends React.Component< ISearchCollectionProps,
-ISearchCollectionState>{
-    handleSearchResultChanged(e: ISearchResult) {
+  export interface ILocationRiderControlProps {
+    handleLocationRiderChanged?: (locationRider: ILocationRider) => void;
+    submitLocationRider?:(locationRider: ILocationRider)=>void;
+    NumRiders?:number;
+    SearchResult?:string;
+  }
+export class LocationRiderControl extends React.Component< ILocationRiderControlProps,
+ILocationRiderControlState>{
+  constructor(props:Readonly<ILocationRiderControlProps>){
+    super(props);
+    this.handleRidersChanged = this.handleRidersChanged.bind(this);
+    this.handleAddLocationClicked = this.handleAddLocationClicked.bind(this);
+    this.state = {NumRiders:props.NumRiders, SearchResult:props.SearchResult, SubmitEnabled:false, Submitted:false};
+  }
+  handleRidersChanged(e){
+    this.setState({NumRiders:e.target.Value});
+    this.resetSubmitEnabled();
+  }
+  handleSearchResultChanged(e: ISearchResult) {
         console.log("handleSearchResultsChanged ");
-        var searchResult = {...e, };
-        this.state.SearchResults.push(e);
-        this.setState({ SearchResults: this.state.SearchResults });
-        this.props.handleSearchCollectionChanged(this.state.SearchResults);
+        this.setState({ SearchResult: e.SearchResult });
+        this.resetSubmitEnabled();
       }
+  handleAddLocationClicked(){
+        this.props.handleLocationRiderChanged(this.state);
+  }
+  resetSubmitEnabled(){
+    if(this.state.NumRiders && this.state.SearchResult){
+      this.setState({SubmitEnabled:true});
+    }
+  }
     render(){
         return <table>
           <td></td>
           <td></td>
-        </table>
         <tr>
          <EnterLocationControl
           SearchResult={{
             SearchQuery: "",
-            SearchResult: undefined
+            SearchResult: this.state.SearchResult
           }}
           searchResultsChanged={this.handleSearchResultChanged}
         />
         <div style={{display:"inline-block"}}>
-        <label className="RidersLabel"># Riders</label><input className="Riders" value={this.state.NumRiders}/>
+        <label className="RidersLabel"># Riders</label><input className="Riders" value={this.state.NumRiders} onChange={this.handleRidersChanged}/>
+        <button onClick={this.handleAddLocationClicked} disabled={!this.state.SubmitEnabled}>Add location</button>
         </div></tr></table>
     }
 }
