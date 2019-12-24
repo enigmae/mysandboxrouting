@@ -21,19 +21,18 @@ ILocationRiderControlState>{
     super(props);
     this.handleRidersChanged = this.handleRidersChanged.bind(this);
     this.handleAddLocationClicked = this.handleAddLocationClicked.bind(this);
+    this.handleSearchResultChanged = this.handleSearchResultChanged.bind(this);
     this.state = {NumRiders:props.NumRiders, SearchResult:props.SearchResult, SubmitEnabled:false, Submitted:false};
   }
   handleRidersChanged(e){
-    this.setState({NumRiders:e.target.Value});
-    this.resetSubmitEnabled();
+    this.setState({NumRiders:e.target.value}, this.resetSubmitEnabled);
   }
   handleSearchResultChanged(e: ISearchResult) {
         console.log("handleSearchResultsChanged ");
-        this.setState({ SearchResult: e.SearchResult });
-        this.resetSubmitEnabled();
+        this.setState({ SearchResult: e.SearchResult }, this.resetSubmitEnabled);
       }
   handleAddLocationClicked(){
-        this.props.handleLocationRiderChanged(this.state);
+       // this.props.handleLocationRiderChanged(this.state);
   }
   resetSubmitEnabled(){
     if(this.state.NumRiders && this.state.SearchResult){

@@ -90,8 +90,7 @@ export class EnterLocationsControl extends React.Component<
       value={this.state.Arrivaltime}
       onChange={this.handleArrivalTimeChanged}
     />
-        <locationRiderCollectionControl
-          handleSearchCollectionChanged={this.handleMultipleItinerarySearch}
+        <LocationRiderCollectionControl
         />
         <button  onClick={this.handleSearchItineraries}>Search</button>
        <ItinerariesControl ItinerariesResponse={this.state.ItinerariesResponse}/>
