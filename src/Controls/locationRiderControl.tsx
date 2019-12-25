@@ -11,7 +11,7 @@ export interface ILocationRider {
   }
   export interface ILocationRiderControlProps {
     handleLocationRiderChanged?: (locationRider: ILocationRider) => void;
-    submitLocationRider?:(locationRider: ILocationRider)=>void;
+    submitLocationRider:(locationRider: ILocationRider)=>void;
     NumRiders?:number;
     SearchResult?:string;
   }
@@ -32,7 +32,7 @@ ILocationRiderControlState>{
         this.setState({ SearchResult: e.SearchResult }, this.resetSubmitEnabled);
       }
   handleAddLocationClicked(){
-       // this.props.handleLocationRiderChanged(this.state);
+      this.props.submitLocationRider(this.state);
   }
   resetSubmitEnabled(){
     if(this.state.NumRiders && this.state.SearchResult){
@@ -53,7 +53,7 @@ ILocationRiderControlState>{
         />
         <div style={{display:"inline-block"}}>
         <label className="RidersLabel"># Riders</label><input className="Riders" value={this.state.NumRiders} onChange={this.handleRidersChanged}/>
-        <button onClick={this.handleAddLocationClicked} disabled={!this.state.SubmitEnabled}>Add location</button>
+        <button className="AddLocation" onClick={this.handleAddLocationClicked} disabled={!this.state.SubmitEnabled}>Add location</button>
         </div></tr></table>
     }
 }

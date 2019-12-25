@@ -11,12 +11,13 @@ export interface ILocationRiderCollectionControlState{
 export class LocationRiderCollectionControl extends React.Component<ILocationRiderCollectionControlProps, ILocationRiderCollectionControlState> {
   constructor(props: Readonly<ILocationRiderCollectionControlProps>) {
     super(props);
-    this.state = { LocationRiders: [] };
+    this.state = { LocationRiders: new Array() };
     this.handleLocationRiderChanged = this.handleLocationRiderChanged.bind(this);
+    this.handleSubmitRider = this.handleSubmitRider.bind(this);
   }
   blankitem = (
     <LocationRiderControl
-    submitLocationRider={this.handleSubmitRider}
+    submitLocationRider={(e)=>this.handleSubmitRider(e)}
      handleLocationRiderChanged={this.handleLocationRiderChanged}
    />
 );
@@ -24,12 +25,16 @@ export class LocationRiderCollectionControl extends React.Component<ILocationRid
 
   }
 handleSubmitRider(locationRider: ILocationRider){
-    this.state.LocationRiders.push(locationRider);
+  var locationRiders = this.state.LocationRiders;
+  locationRiders.push(locationRider);
+  this.setState({LocationRiders:locationRiders});
 }
   render() {
     const items = [this.blankitem];
     for (let locationRider of this.state.LocationRiders) {
-      items.push(<LocationRiderControl NumRiders={locationRider.NumRiders} SearchResult={locationRider.SearchResult}/>);
+      items.push(<LocationRiderControl NumRiders={locationRider.NumRiders} SearchResult={locationRider.SearchResult}
+        submitLocationRider={(e)=>this.handleSubmitRider(e)}
+        />);
     }
     return <ol>{items}</ol>;
   }
