@@ -4,7 +4,7 @@ import { render } from "react-dom";
 import { LocationRiderCollectionControl } from "./Controls/locationRiderCollectionControl";
 import { MapsControl } from "./mapsContol";
 import { ISearchResult } from "./Controls/enterLocationControl";
-import { EnterLocationsControl } from "./Controls/enterLocationsControl";
+import { LandingPageControl } from "./Controls/LandingPageControl";
 
 function App() {
   return (
@@ -13,7 +13,7 @@ function App() {
       <h1>Hello CodeSandbox Test</h1>
       <h2>Enter locations</h2>
       
-    <EnterLocationsControl/>
+    <LandingPageControl/>
     </div>
   );
 }

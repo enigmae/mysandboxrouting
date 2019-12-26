@@ -15,7 +15,7 @@ export class ItineraryCollectionService implements IItineraryCollectionService{
       let itinerary = await this.itinerary.getItinerary({
         startLocation: result.Coords!, searchParams: getItinerariesRequest.searchResults,
         dwellTime: getItinerariesRequest.dwellTime, endLocation: getItinerariesRequest.endLocation,
-        startTime:result.startTime, endTime:result.endTime
+        startTime:result.StartTime, endTime:result.EndTime
       });
       response.push(itinerary);
     }

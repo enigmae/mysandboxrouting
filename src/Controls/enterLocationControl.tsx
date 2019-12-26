@@ -18,7 +18,7 @@ async function getBingMapsResponse(query: string): Promise<IResource> {
 }
 
 interface IEnterLocationState {
-  SearchQuery: string;
+  SearchQuery?: string;
   SearchResult: string;
   SearchResultVisible: boolean;
   Coords: ILatLong;
@@ -31,13 +31,18 @@ export interface ILatLong {
 }
 export interface ISearchResult {
   SearchResult?: string;
-  SearchQuery: string;
+  SearchQuery?: string;
   Coords?: ILatLong;
 }
 export interface ISearchParam extends ISearchResult{
-  endTime?:Date;
-  startTime?:Date;
-  riders?:number;
+  EndTime?:Date;
+  StartTime?:Date;
+  Riders?:number;
+}
+export class SearchParam implements ISearchParam{
+  constructor(public SearchResult:string, public Riders:number, public StartTime?:Date, public EndTime?:Date){
+
+  }
 }
 export interface IEnterLocationControlProps {
   searchResultsChanged: (arg0: ISearchResult) => void;

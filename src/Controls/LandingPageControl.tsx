@@ -1,6 +1,6 @@
 import * as React from "react";
 import { LocationRiderCollectionControl } from "./locationRiderCollectionControl";
-import { ISearchResult, ISearchParam } from "./enterLocationControl";
+import { ISearchResult, ISearchParam, SearchParam } from "./enterLocationControl";
 import { IItinineraryResponse, instructionSet, IItineraryService, ItinerariesResponse } from "../Services/itinerary";
 import { EnterLocationControl } from "./enterLocationControl";
 import { ItineraryInstructionsControl } from "./itineraryInstructionsControl";
@@ -10,6 +10,8 @@ import { ItineraryCollectionService } from "../Services/ItineraryCollectionServi
 import DateTimePicker from "react-datetime-picker";
 import * as dateMath from 'date-arithmetic';
 import { ItinerariesControl } from "./itinerariesControl";
+import { ILocationRider } from "./locationRiderControl";
+import Enumerable from "linq";
 interface IDisplayItinerariesState {
   SearchResults?: ISearchParam[];
   Destination?: ISearchResult;
@@ -18,7 +20,7 @@ interface IDisplayItinerariesState {
   DwellTime?: number;
   Arrivaltime:Date;
 }
-export class EnterLocationsControl extends React.Component<
+export class LandingPageControl extends React.Component<
   {},
   IDisplayItinerariesState
 > {
@@ -90,12 +92,15 @@ export class EnterLocationsControl extends React.Component<
       value={this.state.Arrivaltime}
       onChange={this.handleArrivalTimeChanged}
     />
-        <LocationRiderCollectionControl
+        <LocationRiderCollectionControl handleLocationRidersChanged={(e)=>this.handleLocationRidersChanged(e)}
         />
         <button  onClick={this.handleSearchItineraries}>Search</button>
        <ItinerariesControl ItinerariesResponse={this.state.ItinerariesResponse}/>
       </div>
     );
+  }
+  handleLocationRidersChanged(locationRiders:ILocationRider[]){
+   var  Enumerable.from(locationRiders).select((val)=>new SearchParam(val.SearchResult!, val.NumRiders!));
   }
   handleArrivalTimeChanged(date:Date){
     this.setState({Arrivaltime:date});
@@ -106,8 +111,8 @@ export class EnterLocationsControl extends React.Component<
       let duration:number = this.searchResultHashmap[i.SearchResult!];
       duration+=2;
       let startTime = dateMath.add(date, -duration, "minutes");
-      i.startTime = startTime;
-      i.endTime = dateMath.add(startTime, 1, "day");
+      i.StartTime = startTime;
+      i.EndTime = dateMath.add(startTime, 1, "day");
     });
     this.handleSearchItineraries();
   }
