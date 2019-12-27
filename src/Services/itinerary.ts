@@ -15,19 +15,23 @@ export interface IitineraryItem {
   name: string;
   dwellTime: string;
   location: location;
+  quantity:Array<number>;
 }
 export class itineraryItem implements IitineraryItem {
   constructor(
     public name: string,
     public dwellTime: string,
     public location: location,
+    public quantity:Array<number>,
     public openingTime?:string,
     public closingTime?:string,
-    public startingTime?:string
+    public startingTime?:string,
+    
   ) {}
 }
 export interface agent {
   name: string;
+  capacity:Array<number>;
   shifts: shift[];
 }
 export interface IItineraryRequest {
@@ -47,9 +51,10 @@ export interface instruction {
   instructionType: string;
   distance: number;
   itineraryItem: IitineraryItem;
-  startTime: string;
+   startTime: string;
   endTime: string;
   duration: string;
+  pickupRiders:number;
 }
 export class instructionSet{
   constructor(agentItinerary:agentItinerary){
@@ -89,6 +94,8 @@ export interface agentItinerary {
 }
 export interface resource {
   agentItineraries: agentItinerary[];
+  callbackUrl:string;
+  callbackInSeconds:number;
 }
 export interface resourceSet {
   resources: resource[];
@@ -118,6 +125,7 @@ export interface getItineraryRequest {
   dwellTime: number;
   startTime?:Date;
   endTime?:Date;
+  numAgents:number;
 }
 export interface IItineraryService{
   getItinerary(

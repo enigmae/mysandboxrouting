@@ -1,9 +1,10 @@
 import * as React from 'react';
-import { EnterLocationControl, ISearchParam, ISearchResult } from './enterLocationControl';
+import { EnterLocationControl, ISearchParam, ISearchResult, ILatLong } from './enterLocationControl';
 import { ILocation } from '../bing';
 export interface ILocationRider {
     SearchResult?: string;
     NumRiders?:number;
+    Coords?:ILatLong;
   }
   export interface ILocationRiderControlState extends ILocationRider{
     SubmitEnabled:boolean;
@@ -29,7 +30,7 @@ ILocationRiderControlState>{
   }
   handleSearchResultChanged(e: ISearchResult) {
         console.log("handleSearchResultsChanged ");
-        this.setState({ SearchResult: e.SearchResult }, this.resetSubmitEnabled);
+        this.setState({ SearchResult: e.SearchResult, Coords:e.Coords!}, this.resetSubmitEnabled);
       }
   handleAddLocationClicked(){
       this.props.submitLocationRider(this.state);

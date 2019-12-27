@@ -40,7 +40,7 @@ export interface ISearchParam extends ISearchResult{
   Riders?:number;
 }
 export class SearchParam implements ISearchParam{
-  constructor(public SearchResult:string, public Riders:number, public StartTime?:Date, public EndTime?:Date){
+  constructor(public SearchResult:string, public Riders:number, public Coords:ILatLong, public StartTime?:Date, public EndTime?:Date){
 
   }
 }
@@ -111,8 +111,8 @@ export class EnterLocationControl extends React.Component<
       return false;
     }
   }
-
-  handleSearchBlur(event) {
+ 
+  handleSearchBlur(event){
     if (!this.noticedChange()) return;
     let searchResult =
       this.state.SearchQuery === "" ? "" : this.state.SearchResult;
