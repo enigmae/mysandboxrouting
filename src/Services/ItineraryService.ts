@@ -16,12 +16,13 @@ export class ItineraryService implements IItineraryService {
       latitude: getItineraryRequest.endLocation.Lat,
       longitude: getItineraryRequest.endLocation.Long
     }, '2019-11-16T16:00:00', '2019-11-16T18:00:00'));*/
+    console.log("Searching for start time:"+getItineraryRequest.startTime);
     let startTime = getItineraryRequest.startTime==undefined? "2019-11-16T08:00:00" : dateformat(getItineraryRequest.startTime, 'yyyy-mm-ddThh:MM:ss');
     let endTime = getItineraryRequest.endTime==undefined?"2019-11-16T18:00:00" : dateformat(getItineraryRequest.endTime, 'yyyy-mm-ddThh:MM:ss');
     startTime = startTime.replace('P', 'T').replace('A','T');
     endTime = endTime.replace('P', 'T').replace('A','T');
     var agents = new Array();
-    var maxAgents = 2;
+    var maxAgents = 3;
     if(getItineraryRequest.numAgents==1){
       maxAgents =1;
     }
@@ -81,7 +82,9 @@ export class ItineraryService implements IItineraryService {
     };
     wait = setTimeout(onTimeout, callbackTimeout*1000);
     });
-     return promiseGetResponse.finally(()=> release());
+     return promiseGetResponse.then(i=> {
+       return new ItinineraryResponse((<IItinineraryResponse>JSON.parse(result)).resourceSets);
+     }).finally(()=> release());
     }
    release();
     return new ItinineraryResponse((<IItinineraryResponse>result).resourceSets);

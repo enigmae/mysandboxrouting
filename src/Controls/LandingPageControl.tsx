@@ -109,14 +109,32 @@ export class LandingPageControl extends React.Component<
   }
   searchResultHashmap={};
   handleReadjustForArrival(date:Date){
+    var searchResultHashmap = this.searchResultHashmap;
+    var research = false;
     this.state.SearchResults!.forEach(i=>{
-      let duration:number = this.searchResultHashmap[i.SearchResult!];
+      let existingDuration = searchResultHashmap[i.SearchResult!];
+      if(existingDuration){
+        research = true;
+      }
+      let duration:number = existingDuration;
+      
       duration+=2;
       let startTime = dateMath.add(date, -duration, "minutes");
       i.StartTime = startTime;
       i.EndTime = dateMath.add(startTime, 1, "day");
     });
-    this.handleSearchItineraries(true);
+    if(research)
+    {
+      this.handleSearchItineraries(true);
+    }
+  }
+  handleReadjustForArrivalBySubtractDuration(date:Date){
+    console.log('Readjusting for arrival date:'+date.toString());
+    var response = this.state.ItinerariesResponse!
+    response.itineraries.forEach(it=>{
+      it.readjustForArrival(date);
+    });
+    this.setState({ItinerariesResponse:undefined}, ()=>this.setState({ItinerariesResponse:response}));
   }
   /*
   handleSingleItinerarySearch(searchResults:ISearchResult[]){
@@ -150,7 +168,7 @@ export class LandingPageControl extends React.Component<
       });});
     }).then(()=>{
       if(!skipReadjust)
-        this.handleReadjustForArrival(this.state.Arrivaltime);
+        this.handleReadjustForArrivalBySubtractDuration(this.state.Arrivaltime);
     });
   }
   handleDestinationChanged(e: ISearchResult) {

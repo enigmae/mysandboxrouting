@@ -23,8 +23,12 @@ export class ItineraryCollectionService implements IItineraryCollectionService{
     }
     let responses = new Array<IItinineraryResponse>();
     await Promise.all(response.map(m=>m.then(r=>responses.push(r))));
-    return { 
-      itineraries: Enumerable.from(responses).where(i=>i.instructionSets!==undefined).orderByDescending(i=>i.instructionSets.length).thenBy(i=>Enumerable.from( i.instructionSets).max(m=>m.durationMinutes)).select(i=>i).toArray()
+    let returnedValue = {
+      itineraries: Enumerable.from(responses).
+        where(i=>i.instructionSets!==undefined)
+        .orderByDescending(i=>i.instructionSets.length)
+        .thenBy(i=>Enumerable.from( i.instructionSets).max(m=>m.durationMinutes)).select(i=>i).toArray()
   };
+  return returnedValue;
 }
 }
