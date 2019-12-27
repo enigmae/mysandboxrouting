@@ -27,7 +27,7 @@ render(){
         return <div/>
         let responseList;
         let instructionList  = this.props.ItinerariesResponse.itineraries.map(m=>
-        <li><InstructionSummaryControl instructionSet = {m.instructionSets[0]}/></li>);
+         <li> {m.instructionSets.map(is=><InstructionSummaryControl instructionSet = {is}/>)}</li>);
          responseList = <ol>{instructionList}</ol>;
     return <div>
         <h1>Itineraries:</h1>

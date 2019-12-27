@@ -36,6 +36,7 @@ export class LandingPageControl extends React.Component<
     this.handleMultipleItinerarySearch = this.handleMultipleItinerarySearch.bind(this);
     this.handleSearchItineraries = this.handleSearchItineraries.bind(this);
     this.handleReadjustForArrival = this.handleReadjustForArrival.bind(this);
+    this.handleArrivalTimeChanged = this.handleArrivalTimeChanged.bind(this);
   }
   initializeArrivalTime(){
     let endOfToday = dateMath.endOf(new Date(),'day');
@@ -94,13 +95,14 @@ export class LandingPageControl extends React.Component<
     />
         <LocationRiderCollectionControl handleLocationRidersChanged={(e)=>this.handleLocationRidersChanged(e)}
         />
-        <button  onClick={this.handleSearchItineraries}>Search</button>
+        <button  onClick={()=>this.handleSearchItineraries()}>Search</button>
        <ItinerariesControl ItinerariesResponse={this.state.ItinerariesResponse}/>
       </div>
     );
   }
   handleLocationRidersChanged(locationRiders:ILocationRider[]){
-   var  Enumerable.from(locationRiders).select((val)=>new SearchParam(val.SearchResult!, val.NumRiders!));
+   var result = Enumerable.from(locationRiders).select((val)=>new SearchParam(val.SearchResult!, val.NumRiders!, val.Coords!)).toArray();
+   this.setState({SearchResults:result});
   }
   handleArrivalTimeChanged(date:Date){
     this.setState({Arrivaltime:date});
@@ -114,7 +116,7 @@ export class LandingPageControl extends React.Component<
       i.StartTime = startTime;
       i.EndTime = dateMath.add(startTime, 1, "day");
     });
-    this.handleSearchItineraries();
+    this.handleSearchItineraries(true);
   }
   /*
   handleSingleItinerarySearch(searchResults:ISearchResult[]){
@@ -135,7 +137,7 @@ export class LandingPageControl extends React.Component<
   handleMultipleItinerarySearch(searchResults:ISearchResult[]){
     this.setState({SearchResults:searchResults});
   }
-  handleSearchItineraries(){
+  handleSearchItineraries(skipReadjust:boolean=false){
     this.itineraryCollection.getItineraries({
       dwellTime: this.state.DwellTime!,
       searchResults: this.state.SearchResults!,
@@ -147,7 +149,8 @@ export class LandingPageControl extends React.Component<
         this.searchResultHashmap[is.startingPoint] = is.durationMinutes;
       });});
     }).then(()=>{
-      this.handleReadjustForArrival(this.state.Arrivaltime);
+      if(!skipReadjust)
+        this.handleReadjustForArrival(this.state.Arrivaltime);
     });
   }
   handleDestinationChanged(e: ISearchResult) {

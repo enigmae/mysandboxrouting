@@ -13,6 +13,7 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
               let place;
               let endtime;
               let duration;
+              let quantity;
               //if(i.instructionType!="TravelBetweenLocations")
               //    return;
               if (i.itineraryItem) {
@@ -47,18 +48,27 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
                   </span>
                 );
               }
+              if (i.itineraryItem && i.itineraryItem.quantity &&i.instructionType!='ArriveToEndPoint') {
+                quantity = (
+                  <span>
+                    {" "}
+                    <b># Riders:</b>
+                    {i.itineraryItem.quantity[0]}
+                  </span>
+                );
+              }
               return (
                 <li key={i.startTime + i.instructionType}>
                   <b>Start:</b>
                   {i.startTime} {place}
                   <br />
                   <b> Type:</b>
-                  {i.instructionType} {endtime} {duration}
+                  {i.instructionType} {quantity} {endtime} {duration}
                 </li>
               );
             }
           );
-        return <div>Total time:{this.props.instructions.durationMinutes} minutes
+        return <div>Total time:{this.props.instructions.durationMinutes} minutes Agent:{this.props.instructions.agent.name}
     <ol>{instructionRenders}</ol>
         </div>
     }
