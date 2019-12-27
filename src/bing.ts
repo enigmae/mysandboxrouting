@@ -9,6 +9,7 @@ export interface IResource {
   point: ILocation;
   name: string;
 }
-export interface ILocation {
+export interface ILocation 
+{
   coordinates: number[];
 }
