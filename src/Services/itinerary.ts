@@ -1,7 +1,8 @@
 import { ISearchResult, ILatLong, ISearchParam } from "../Controls/enterLocationControl";
-
+import * as Enumerable from 'linq';
 import * as addsubtractdate from 'add-subtract-date';
 import dateformat from 'dateformat';
+
 var dateDiff = require('date-diff');
 export interface location {
   latitude: number;
@@ -113,11 +114,9 @@ export interface IItinineraryResponse {
   readjustForArrival(date:Date);
 }
 export class ItinineraryResponse implements IItinineraryResponse{
+  public instructionSets:instructionSet[];
   constructor(public resourceSets: resourceSet[]){
-
-  }
-  get instructionSets():instructionSet[]{
-    return this.resourceSets[0].resources[0].agentItineraries.map(i=> new instructionSet(i));
+    this.instructionSets = Enumerable.from(this.resourceSets[0].resources[0].agentItineraries).where(i=>i.instructions.length>3).toArray().map(i=> new instructionSet(i));
   }
    add_minutes(dt:Date, minutes:number):Date {
     return new Date(dt.getTime() + minutes*60000);
