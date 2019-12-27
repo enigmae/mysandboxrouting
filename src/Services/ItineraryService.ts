@@ -1,7 +1,9 @@
 import * as request from "request-promise";
 import dateformat from 'dateformat';
+import {Semaphore} from 'await-semaphore';
 import { IItineraryService, getItineraryRequest, IItinineraryResponse, itineraryItem, ItineraryRequest, ItinineraryResponse } from "./itinerary";
 export class ItineraryService implements IItineraryService {
+  semaphore = new Semaphore(7);
   constructor(private key:string='ArLJodQ7fEaQ2dfy3lIHWJrJILC35_Qj0EpT8TCy3ls96pl6sqCdlu18bo8j_tbM'){
     
   }
@@ -48,29 +50,40 @@ export class ItineraryService implements IItineraryService {
       resolveWithFullResponse: false,
       json: new ItineraryRequest(agents, itineraryItems)
     });*/
-    
+    var release = await this.semaphore.acquire();
      var result = await request.post("https://dev.virtualearth.net/REST/V1/Routes/OptimizeItineraryAsync?key="+this.key, {
       resolveWithFullResponse: false,
       json: new ItineraryRequest(agents, itineraryItems)
     });
     var itineraryResponse = (<IItinineraryResponse>result);
+     console.log(JSON.stringify(itineraryResponse));
+    
     var callbackUrl = itineraryResponse.resourceSets[0].resources[0].callbackUrl;
     var callbackTimeout = itineraryResponse.resourceSets[0].resources[0].callbackInSeconds;
     if(callbackUrl){
     let promiseGetResponse = new Promise<IItinineraryResponse>((resolve, reject) => {
-    let wait = setInterval(async () => {
+    let wait;
+    var onTimeout =async () => {
+    console.log('invoking callback url');
+    
       result = await request.get(callbackUrl);
       itineraryResponse = (<IItinineraryResponse>JSON.parse(result));
+     callbackUrl = itineraryResponse.resourceSets[0].resources[0].callbackUrl;
       console.log(JSON.stringify(itineraryResponse));
-      if(!itineraryResponse.resourceSets[0].resources[0].callbackUrl)
+      if(!callbackUrl)
         {
-          clearInterval(wait);
+          clearTimeout(wait);
           resolve(itineraryResponse);
         }
-    }, callbackTimeout*1000);});
-    result = await promiseGetResponse;
+        else{
+          wait = setTimeout(onTimeout, callbackTimeout*1000);
+        }
+    };
+    wait = setTimeout(onTimeout, callbackTimeout*1000);
+    });
+     return promiseGetResponse.finally(()=> release());
     }
-   
+   release();
     return new ItinineraryResponse((<IItinineraryResponse>result).resourceSets);
   }
 }

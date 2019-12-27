@@ -7,13 +7,13 @@ export class ItineraryCollectionService implements IItineraryCollectionService{
   constructor(private itinerary: IItineraryService) {
   }
   async getItineraries(getItinerariesRequest: ItinerariesRequest): Promise<ItinerariesResponse> {
-    let response = new Array<IItinineraryResponse>();
+    let response = new Array<Promise<IItinineraryResponse>>();
     for(var numAgents = 1; numAgents<= getItinerariesRequest.searchResults.length;numAgents++){
     for (let result of getItinerariesRequest.searchResults) {
       let startDate =new Date(2019,11,17,10,0);
       let endDate =new Date(2019,11,18,22,0);
       
-      let itinerary = await this.itinerary.getItinerary({numAgents:numAgents,
+      let itinerary = this.itinerary.getItinerary({numAgents:numAgents,
         startLocation: result.Coords!, searchParams: getItinerariesRequest.searchResults,
         dwellTime: getItinerariesRequest.dwellTime, endLocation: getItinerariesRequest.endLocation,
         startTime:result.StartTime, endTime:result.EndTime
@@ -21,8 +21,10 @@ export class ItineraryCollectionService implements IItineraryCollectionService{
       response.push(itinerary);
     }
     }
+    let responses = new Array<IItinineraryResponse>();
+    await Promise.all(response.map(m=>m.then(r=>responses.push(r))));
     return { 
-      itineraries: Enumerable.from(response).orderByDescending(i=>i.instructionSets.length).thenBy(i=>Enumerable.from( i.instructionSets).max(m=>m.durationMinutes)).select(i=>i).toArray()
+      itineraries: Enumerable.from(responses).where(i=>i.instructionSets!==undefined).orderByDescending(i=>i.instructionSets.length).thenBy(i=>Enumerable.from( i.instructionSets).max(m=>m.durationMinutes)).select(i=>i).toArray()
   };
 }
 }
