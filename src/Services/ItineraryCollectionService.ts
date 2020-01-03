@@ -13,7 +13,7 @@ export class ItineraryCollectionService implements IItineraryCollectionService{
       let startDate =new Date(2019,11,17,10,0);
       let endDate =new Date(2019,11,18,22,0);
       
-      let itinerary = this.itinerary.getItinerary({numAgents:numAgents,
+      let itinerary = this.itinerary.getItinerary({numAgents:numAgents,endLocationName:getItinerariesRequest.endLocationName,
         startLocation: result.Coords!, searchParams: getItinerariesRequest.searchResults,
         dwellTime: getItinerariesRequest.dwellTime, endLocation: getItinerariesRequest.endLocation,
         startTime:result.StartTime, endTime:result.EndTime

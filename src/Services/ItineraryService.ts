@@ -83,10 +83,10 @@ export class ItineraryService implements IItineraryService {
     wait = setTimeout(onTimeout, callbackTimeout*1000);
     });
      return promiseGetResponse.then(i=> {
-       return new ItinineraryResponse((<IItinineraryResponse>JSON.parse(result)).resourceSets);
+       return new ItinineraryResponse((<IItinineraryResponse>JSON.parse(result)).resourceSets, getItineraryRequest.endLocationName);
      }).finally(()=> release());
     }
    release();
-    return new ItinineraryResponse((<IItinineraryResponse>result).resourceSets);
+    return new ItinineraryResponse((<IItinineraryResponse>result).resourceSets, getItineraryRequest.endLocationName);
   }
 }

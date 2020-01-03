@@ -48,7 +48,7 @@ export class LandingPageControl extends React.Component<
   itinerary: IItineraryService;
   render() {
     let responseList;
-    if (
+    /*if (
       this.state &&
       this.state.ItineraryResponse &&
       this.state.ItineraryResponse.resourceSets
@@ -57,13 +57,13 @@ export class LandingPageControl extends React.Component<
       responseList  = <InstructionSummaryControl instructionSet=
         {this.state.ItineraryResponse.instructionSets[0]}/>;
     }
-    else if (
+    else */if (
       this.state &&
       this.state.ItinerariesResponse
     ){
       //TODO:Break this out into it's own control
       let instructionList  = this.state.ItinerariesResponse.itineraries.map(m=>
-     <li><InstructionSummaryControl instructionSet = {m.instructionSets[0]}/></li>);
+     <li><InstructionSummaryControl condensedInstructionSet ={m.condensedInstructionSet}/></li>);
       responseList = <ol>{instructionList}</ol>;
     }
     return (
@@ -159,8 +159,9 @@ export class LandingPageControl extends React.Component<
     this.itineraryCollection.getItineraries({
       dwellTime: this.state.DwellTime!,
       searchResults: this.state.SearchResults!,
-      endLocation: this.state.Destination!.Coords!
-    })
+      endLocation: this.state.Destination!.Coords!,
+      endLocationName:this.state.Destination!.SearchResult!
+    }) 
     .then((i: ItinerariesResponse) => {
       this.setState({ ItinerariesResponse: i });
       i.itineraries.forEach(it=>{it.instructionSets.forEach(is=>{

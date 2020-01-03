@@ -1,75 +1,60 @@
 import * as React from "react";
-import { instruction, instructionSet } from "../Services/itinerary";
+import { instruction, instructionSet, condensedInstruction, condensedInstructionSet } from "../Services/itinerary";
 import * as linq from "linq";
 export interface InstructionControlProps{
-    instructions:instructionSet
+    condensedInstructions:condensedInstructionSet;
 }
 export class ItineraryInstructionsControl extends React.Component<InstructionControlProps>{
+  formatDate(date:string){
+    if(!date)
+    return '';
+    return new Date(this.fixPM(date)).toLocaleDateString();
+  }
+  formatTime(date:string){
+    if(!date)
+    return '';
+    return new Date(this.fixPM(date)).toLocaleTimeString();
+  }
+  fixPM(date:string){
+    if(date.includes('P')){
+      return date.replace('P', ' ')+' PM';
+      }
+      return date;
+  }
     render(){
       
-        let instructionRenders = linq.from(this.props.instructions.instructions).skip(2).toArray().map(
-            i => {
+        let instructionRenders = linq.from(this.props.condensedInstructions.condensedInstructions).toArray().map(
+            (i) => {
               let loc;
               let place;
               let endtime;
               let duration;
               let quantity;
-              //if(i.instructionType!="TravelBetweenLocations")
-              //    return;
-              if (i.itineraryItem) {
-                loc =
-                  "Location:(" +
-                  i.itineraryItem.location.latitude +
-                  ", " +
-                  i.itineraryItem.location.longitude +
-                  ")";
-                if (i.itineraryItem.name) {
-                  place = (
-                    <span>
-                      <b>Place:</b>
-                      <label>{i.itineraryItem.name}</label>
-                    </span>
-                  );
-                }
-              }
-              if (i.endTime) {
-                endtime = (
-                  <span>
-                    <b>EndTime:</b> {i.endTime}
-                  </span>
-                );
-              }
-              if (i.duration) {
-                duration = (
-                  <span>
-                    {" "}
-                    <b>Duration:</b>
-                    {i.duration}
-                  </span>
-                );
-              }
-              if (i.itineraryItem && i.itineraryItem.quantity &&i.instructionType!='ArriveToEndPoint') {
-                quantity = (
-                  <span>
-                    {" "}
-                    <b># Riders:</b>
-                    {i.itineraryItem.quantity[0]}
-                  </span>
-                );
-              }
-              return (
-                <li key={i.startTime + i.instructionType}>
-                  <b>Start:</b>
-                  {i.startTime} {place}
-                  <br />
-                  <b> Type:</b>
-                  {i.instructionType} {quantity} {endtime} {duration}
-                </li>
-              );
+              let agent;
+              let location;
+              let arrive;
+              let leave;
+              agent = <td>{i.agent}</td>;
+              location = <td>{i.location}</td>;
+              arrive = <td>{this.formatDate(i.startTime)}&nbsp;{this.formatTime(i.startTime)}</td>;
+              leave = <td>{i.endTime ? this.formatDate(i.endTime) :''}&nbsp;{i.endTime ? this.formatTime(i.endTime) :''}</td>;
+              quantity =<td>{i.passengers}</td>;
+              
+              return <tr>{agent}[{location}{arrive}{leave}{quantity}</tr>;
             }
           );
-        return <div>Total time:{this.props.instructions.durationMinutes} minutes Agent:{this.props.instructions.agent.name}
-    <ol>{instructionRenders}</ol>
-        </div>
+        return <div/>;/*<div>Total time:{this.props.instructions.durationMinutes} minutes Agent:{this.props.instructions.agent.name}
+    <table>
+    <tr>
+    <th>Agent</th>
+    <th>Location</th>
+    <th>Arrive</th>
+    <th>Leave</th>
+    <th># Passengers</th>
+  </tr>
+    {instructionRenders}
+    </table>
+    </div>*/
+    
     }
 }

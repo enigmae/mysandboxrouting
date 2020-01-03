@@ -54,13 +54,36 @@ export interface instruction {
   instructionType: string;
   distance: number;
   itineraryItem: IitineraryItem;
-   startTime: string;
+  startTime: string;
   endTime: string;
   duration: string;
   pickupRiders:number;
 }
+export class condensedInstructionSet{
+  public totalMiles:number=0;
+  constructor(public condensedInstructions:condensedInstruction[], public  endLocationName:string, public durationMinutes:number){
+    for(let i = 0; i<condensedInstructions.length;i++){
+      this.totalMiles+=condensedInstructions[i].miles;
+    } 
+  }
+}
+/*
+export class condensedInstructionSetCollection{
+  public 
+  constructor(public condensedInstructionSets:condensedInstructionSet[]){
+   // this.condensedInstructionSets = Enumerable.from(this.condensedInstructionSets).selectMany(i=>i.condensedInstructions).orderBy(i=>i.startTime)
+  }
+}*/
+export interface condensedInstruction{
+  agent:string;
+  startTime: string;
+  endTime?: string;
+  miles:number;
+  location:string;
+  passengers:number;
+}
 export class instructionSet{
-  constructor(agentItinerary:agentItinerary){
+  constructor(agentItinerary:agentItinerary, public endLocationName:string){
     this.instructions = agentItinerary.instructions;
     this.agent = agentItinerary.agent;
     this.distance = this.calcdistance();
@@ -88,12 +111,37 @@ export class instructionSet{
     instruction.startTime = instruction.startTime.replace('P', 'T').replace('A','T');
   }
   private calcMinutes(){
-   let diff = new dateDiff(new Date(this.instructions[this.instructions.length-1].startTime), new Date(this.instructions[0].startTime));
+   let diff = new dateDiff(new Date(this.instructions[this.instructions.length-1].startTime), new Date(this.instructions[2].startTime));
     return diff.minutes();
   }
   recalculateDuration(){
   this.instructions.map(i=> this.adjustTimeFormat(i));
    this.durationMinutes = this.calcMinutes();
+  }
+  get condensedInstructions():condensedInstruction[]{
+    let condensed = new Array<condensedInstruction>();
+    var mileCount = 0;
+    var first = true;
+    for(let index = 1; index<this.instructions.length-1;index++){
+      let visit = this.instructions[index];
+     // let travel = this.instructions[index+1];
+      if(visit.instructionType=='VisitLocation'){
+      condensed.push({agent:this.agent.name, startTime:visit.startTime, endTime:visit.endTime, location: visit.itineraryItem ? visit.itineraryItem.name : '',
+      miles:mileCount, passengers:visit.itineraryItem.quantity[0]});
+      }
+      else{
+        if(first){
+          mileCount=0;
+          first=false;
+          continue;
+        }
+      mileCount+=visit.distance*0.000621371;
+      }
+    }
+    var arrival = this.instructions[this.instructions.length-1];
+    condensed.push({agent:this.agent.name, startTime:arrival.startTime, location: this.endLocationName,
+      miles:mileCount, passengers:0})
+    return condensed;
   }
 }
 export interface agentItinerary {
@@ -112,11 +160,18 @@ export interface IItinineraryResponse {
   resourceSets: resourceSet[];
   instructionSets:instructionSet[];
   readjustForArrival(date:Date);
+  condensedInstructionSet:condensedInstructionSet;
 }
 export class ItinineraryResponse implements IItinineraryResponse{
   public instructionSets:instructionSet[];
-  constructor(public resourceSets: resourceSet[]){
-    this.instructionSets = Enumerable.from(this.resourceSets[0].resources[0].agentItineraries).where(i=>i.instructions.length>3).toArray().map(i=> new instructionSet(i));
+  public condensedInstructionSet:condensedInstructionSet;
+  constructor(public resourceSets: resourceSet[], public destinationName:string){
+    this.instructionSets = Enumerable.from(this.resourceSets[0].resources[0].agentItineraries).where(i=>i.instructions.length>3).toArray().map(i=> new instructionSet(i, destinationName));
+    var instructionsSetsLinq = Enumerable.from(this.instructionSets);
+    var orderedInstructions = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).orderBy(i=>i.startTime).toArray();
+    
+    this.condensedInstructionSet = new condensedInstructionSet(orderedInstructions, destinationName, instructionsSetsLinq.max(i=>i.durationMinutes));
+    
   }
    add_minutes(dt:Date, minutes:number):Date {
     return new Date(dt.getTime() + minutes*60000);
@@ -166,6 +221,7 @@ export interface getItineraryRequest {
   startTime?:Date;
   endTime?:Date;
   numAgents:number;
+  endLocationName:string;
 }
 export interface IItineraryService{
   getItinerary(
@@ -175,6 +231,7 @@ export interface IItineraryService{
 export interface ItinerariesRequest {
   searchResults: ISearchParam[];
   endLocation: ILatLong;
+  endLocationName:string;
   dwellTime: number;
 }
 export interface ItinerariesResponse {

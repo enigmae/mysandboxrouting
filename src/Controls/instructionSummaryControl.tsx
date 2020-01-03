@@ -1,10 +1,10 @@
 import * as React from 'react';
-import { instructionSet } from '../Services/itinerary';
+import { instructionSet, condensedInstructionSet } from '../Services/itinerary';
 import { totalmem } from 'os';
 import { ItineraryInstructionsControl } from './itineraryInstructionsControl';
 import Collapsible from 'react-collapsible';
 export interface IInstructionSummaryControlProps{
-    instructionSet:instructionSet;
+    condensedInstructionSet:condensedInstructionSet;
 }
 export interface IInstructionSummaryControlState{
     collapsed?:boolean;
@@ -18,11 +18,11 @@ export class InstructionSummaryControl extends React.Component<IInstructionSumma
         super(props);
         let collapsed ={collapsed:true};
  
-        this.state = {...collapsed, ...this.calculateState(), startingPoint:this.props.instructionSet.instructions[2].itineraryItem.name};
+        this.state = {...collapsed, ...this.calculateState(), startingPoint:''};
     }
     calculateState(){
-        let calc = {totalHours:Math.floor(this.props.instructionSet.durationMinutes/60), 
-            totalMinutes:this.props.instructionSet.durationMinutes%60, totalDistance:this.props.instructionSet.distance};
+        let calc = {totalHours:Math.floor(this.props.condensedInstructionSet.durationMinutes/60), 
+            totalMinutes:this.props.condensedInstructionSet.durationMinutes%60, totalDistance:this.props.condensedInstructionSet.totalMiles};
         return calc;
     }
     componentDidUpdate(){
@@ -32,9 +32,10 @@ export class InstructionSummaryControl extends React.Component<IInstructionSumma
             }
         }
     render(){
-        let fullSummary = `Total Time:${this.state.totalHours} hrs ${this.state.totalMinutes.toFixed()} min Total Distance:${this.props.instructionSet.distance.toFixed(1)} mi Starting Point:${this.props.instructionSet.instructions[2].itineraryItem.name}`;
+        
+        let fullSummary = `Total Time:${this.state.totalHours} hrs ${this.state.totalMinutes.toFixed()} min Total Distance:${this.props.condensedInstructionSet.totalMiles.toFixed(1)} mi`;
         return <Collapsible trigger={fullSummary}>
-            <ItineraryInstructionsControl instructions={this.props.instructionSet}/>
-        </Collapsible>;
+                <ItineraryInstructionsControl condensedInstructions={this.props.condensedInstructionSet}/>
+            </Collapsible>
     }
 }
