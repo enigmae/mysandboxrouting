@@ -8,7 +8,7 @@ export class ItineraryCollectionService implements IItineraryCollectionService{
   }
   async getItineraries(getItinerariesRequest: ItinerariesRequest): Promise<ItinerariesResponse> {
     let response = new Array<Promise<IItinineraryResponse>>();
-    for(var numAgents = 1; numAgents<= getItinerariesRequest.searchResults.length;numAgents++){
+    for(var numAgents = getItinerariesRequest.minBuses; numAgents<= getItinerariesRequest.maxBuses; numAgents++){
     for (let result of getItinerariesRequest.searchResults) {
       let startDate =new Date(2019,11,17,10,0);
       let endDate =new Date(2019,11,18,22,0);

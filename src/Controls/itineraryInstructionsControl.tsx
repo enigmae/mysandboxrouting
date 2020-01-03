@@ -43,7 +43,7 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
               return <tr>{agent}[{location}{arrive}{leave}{quantity}</tr>;
             }
           );
-        return <div/>;/*<div>Total time:{this.props.instructions.durationMinutes} minutes Agent:{this.props.instructions.agent.name}
+        return <div>Total time:{this.props.condensedInstructions.durationMinutes} minutes Total miles:{this.props.condensedInstructions.totalMiles} mi
     <table>
     <tr>
     <th>Agent</th>
@@ -54,7 +54,7 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
   </tr>
     {instructionRenders}
     </table>
-    </div>*/
+    </div>
     
     }
 }

@@ -233,6 +233,8 @@ export interface ItinerariesRequest {
   endLocation: ILatLong;
   endLocationName:string;
   dwellTime: number;
+  minBuses:number;
+  maxBuses:number;
 }
 export interface ItinerariesResponse {
   itineraries:IItinineraryResponse[];

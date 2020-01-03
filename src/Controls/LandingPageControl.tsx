@@ -19,6 +19,8 @@ interface IDisplayItinerariesState {
   ItinerariesResponse?:ItinerariesResponse; 
   DwellTime?: number;
   Arrivaltime:Date;
+  MinBuses:number;
+  MaxBuses:number;
 }
 export class LandingPageControl extends React.Component<
   {},
@@ -30,13 +32,15 @@ export class LandingPageControl extends React.Component<
     this.itineraryCollection = new ItineraryCollectionService(this.itinerary);
     this.handleDestinationChanged = this.handleDestinationChanged.bind(this);
 
-    this.state = { DwellTime: 15, Arrivaltime: this.initializeArrivalTime()};
+    this.state = { DwellTime: 15, Arrivaltime: this.initializeArrivalTime(), MinBuses:1, MaxBuses:3};
     this.handleDwellTimeChanged = this.handleDwellTimeChanged.bind(this);
     //this.handleSingleItinerarySearch = this.handleSingleItinerarySearch.bind(this);
     this.handleMultipleItinerarySearch = this.handleMultipleItinerarySearch.bind(this);
     this.handleSearchItineraries = this.handleSearchItineraries.bind(this);
     this.handleReadjustForArrival = this.handleReadjustForArrival.bind(this);
     this.handleArrivalTimeChanged = this.handleArrivalTimeChanged.bind(this);
+    this.handleMinBusesChanged = this.handleMinBusesChanged.bind(this);
+    this.handleMaxBusesChanged = this.handleMaxBusesChanged.bind(this);
   }
   initializeArrivalTime(){
     let endOfToday = dateMath.endOf(new Date(),'day');
@@ -48,22 +52,13 @@ export class LandingPageControl extends React.Component<
   itinerary: IItineraryService;
   render() {
     let responseList;
-    /*if (
-      this.state &&
-      this.state.ItineraryResponse &&
-      this.state.ItineraryResponse.resourceSets
-    ){
-      //TODO:Break this out into it's own control
-      responseList  = <InstructionSummaryControl instructionSet=
-        {this.state.ItineraryResponse.instructionSets[0]}/>;
-    }
-    else */if (
+    if (
       this.state &&
       this.state.ItinerariesResponse
     ){
       //TODO:Break this out into it's own control
       let instructionList  = this.state.ItinerariesResponse.itineraries.map(m=>
-     <li><InstructionSummaryControl condensedInstructionSet ={m.condensedInstructionSet}/></li>);
+     <li><InstructionSummaryControl condensedInstructionSet = {m.condensedInstructionSet}/></li>);
       responseList = <ol>{instructionList}</ol>;
     }
     return (
@@ -93,6 +88,10 @@ export class LandingPageControl extends React.Component<
       value={this.state.Arrivaltime}
       onChange={this.handleArrivalTimeChanged}
     />
+    Enter min buses:<br/>
+    <input value={this.state.MinBuses} onChange={this.handleMinBusesChanged}/>
+    Enter max buses:<br/>
+    <input value={this.state.MaxBuses}  onChange={this.handleMaxBusesChanged}/>
         <LocationRiderCollectionControl handleLocationRidersChanged={(e)=>this.handleLocationRidersChanged(e)}
         />
         <button  onClick={()=>this.handleSearchItineraries()}>Search</button>
@@ -100,13 +99,23 @@ export class LandingPageControl extends React.Component<
       </div>
     );
   }
+  handleMinBusesChanged(e){
+    this.setState({MinBuses:Number.parseInt(e.target.value)});
+  }
+  
+  handleMaxBusesChanged(e){
+    this.setState({MaxBuses:Number.parseInt(e.target.value)});
+  }
+
   handleLocationRidersChanged(locationRiders:ILocationRider[]){
    var result = Enumerable.from(locationRiders).select((val)=>new SearchParam(val.SearchResult!, val.NumRiders!, val.Coords!)).toArray();
    this.setState({SearchResults:result});
   }
+
   handleArrivalTimeChanged(date:Date){
     this.setState({Arrivaltime:date});
   }
+
   searchResultHashmap={};
   handleReadjustForArrival(date:Date){
     var searchResultHashmap = this.searchResultHashmap;
@@ -160,7 +169,9 @@ export class LandingPageControl extends React.Component<
       dwellTime: this.state.DwellTime!,
       searchResults: this.state.SearchResults!,
       endLocation: this.state.Destination!.Coords!,
-      endLocationName:this.state.Destination!.SearchResult!
+      endLocationName:this.state.Destination!.SearchResult!,
+      minBuses:this.state.MinBuses,
+      maxBuses:this.state.MaxBuses
     }) 
     .then((i: ItinerariesResponse) => {
       this.setState({ ItinerariesResponse: i });
