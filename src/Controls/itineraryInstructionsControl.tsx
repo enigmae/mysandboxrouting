@@ -34,27 +34,26 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
               let location;
               let arrive;
               let leave;
+              let miles;
               agent = <td>{i.agent}</td>;
               location = <td>{i.location}</td>;
               arrive = <td>{this.formatDate(i.startTime)}&nbsp;{this.formatTime(i.startTime)}</td>;
               leave = <td>{i.endTime ? this.formatDate(i.endTime) :''}&nbsp;{i.endTime ? this.formatTime(i.endTime) :''}</td>;
               quantity =<td>{i.passengers}</td>;
-              
-              return <tr>{agent}[{location}{arrive}{leave}{quantity}</tr>;
+              miles = <td>{i.miles.toFixed(2)}</td>;
+              return <tr>{agent}{location}{arrive}{leave}{quantity}{miles}</tr>;
             }
           );
-        return <div>Total time:{this.props.condensedInstructions.durationMinutes} minutes Total miles:{this.props.condensedInstructions.totalMiles} mi
-    <table>
+        return <table>
     <tr>
     <th>Agent</th>
     <th>Location</th>
     <th>Arrive</th>
     <th>Leave</th>
-    <th># Passengers</th>
+    <th># Riders</th>
+    <th>Miles</th>
   </tr>
     {instructionRenders}
     </table>
-    </div>
-    
     }
 }

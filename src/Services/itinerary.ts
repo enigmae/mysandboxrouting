@@ -61,10 +61,14 @@ export interface instruction {
 }
 export class condensedInstructionSet{
   public totalMiles:number=0;
-  constructor(public condensedInstructions:condensedInstruction[], public  endLocationName:string, public durationMinutes:number){
+  public numAgents:number;
+  constructor(public condensedInstructions:condensedInstruction[], public  endLocationName:string, public durationMinutes:number, public missedCities?:Array<string>){
+    let agentNames = new Set<string>();
     for(let i = 0; i<condensedInstructions.length;i++){
       this.totalMiles+=condensedInstructions[i].miles;
+      agentNames.add(condensedInstructions[i].agent);
     } 
+    this.numAgents = agentNames.size;
   }
 }
 /*
@@ -150,6 +154,7 @@ export interface agentItinerary {
 }
 export interface resource {
   agentItineraries: agentItinerary[];
+  unscheduledItems:IitineraryItem[];
   callbackUrl:string;
   callbackInSeconds:number;
 }
@@ -165,12 +170,15 @@ export interface IItinineraryResponse {
 export class ItinineraryResponse implements IItinineraryResponse{
   public instructionSets:instructionSet[];
   public condensedInstructionSet:condensedInstructionSet;
+  public citiesVisited:Array<string>;
+  public citiesMissed:Array<string>;
   constructor(public resourceSets: resourceSet[], public destinationName:string){
     this.instructionSets = Enumerable.from(this.resourceSets[0].resources[0].agentItineraries).where(i=>i.instructions.length>3).toArray().map(i=> new instructionSet(i, destinationName));
     var instructionsSetsLinq = Enumerable.from(this.instructionSets);
     var orderedInstructions = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).orderBy(i=>i.startTime).toArray();
-    
-    this.condensedInstructionSet = new condensedInstructionSet(orderedInstructions, destinationName, instructionsSetsLinq.max(i=>i.durationMinutes));
+    this.citiesVisited = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).selectMany(i=>i.location).distinct().toArray();
+    this.citiesMissed = Enumerable.from(this.resourceSets[0].resources[0].unscheduledItems).select(i=>i.name).toArray();
+    this.condensedInstructionSet = new condensedInstructionSet(orderedInstructions, destinationName, instructionsSetsLinq.max(i=>i.durationMinutes), this.citiesMissed);
     
   }
    add_minutes(dt:Date, minutes:number):Date {
@@ -222,6 +230,7 @@ export interface getItineraryRequest {
   endTime?:Date;
   numAgents:number;
   endLocationName:string;
+  busCapacity:number;
 }
 export interface IItineraryService{
   getItinerary(
@@ -235,6 +244,7 @@ export interface ItinerariesRequest {
   dwellTime: number;
   minBuses:number;
   maxBuses:number;
+  busCapacity:number;
 }
 export interface ItinerariesResponse {
   itineraries:IItinineraryResponse[];

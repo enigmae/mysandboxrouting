@@ -32,8 +32,16 @@ export class InstructionSummaryControl extends React.Component<IInstructionSumma
             }
         }
     render(){
-        
-        let fullSummary = `Total Time:${this.state.totalHours} hrs ${this.state.totalMinutes.toFixed()} min Total Distance:${this.props.condensedInstructionSet.totalMiles.toFixed(1)} mi`;
+        let citiesMissed='';
+        if(this.props.condensedInstructionSet.missedCities && this.props.condensedInstructionSet.missedCities.length>0){
+            citiesMissed=' Cities Missed:[';
+            for(let missed of this.props.condensedInstructionSet.missedCities){
+                citiesMissed+=missed+', '
+            }
+            citiesMissed.substr(0, citiesMissed.length-2);
+            citiesMissed+=']';
+        }
+        let fullSummary = `Total Time:${this.state.totalHours} hrs ${this.state.totalMinutes.toFixed()} min Total Distance:${this.props.condensedInstructionSet.totalMiles.toFixed(1)} mi #Buses:${this.props.condensedInstructionSet.numAgents}${citiesMissed}`;
         return <Collapsible trigger={fullSummary}>
                 <ItineraryInstructionsControl condensedInstructions={this.props.condensedInstructionSet}/>
             </Collapsible>

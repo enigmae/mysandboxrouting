@@ -21,6 +21,7 @@ interface IDisplayItinerariesState {
   Arrivaltime:Date;
   MinBuses:number;
   MaxBuses:number;
+  BusCapacity:number
 }
 export class LandingPageControl extends React.Component<
   {},
@@ -32,7 +33,7 @@ export class LandingPageControl extends React.Component<
     this.itineraryCollection = new ItineraryCollectionService(this.itinerary);
     this.handleDestinationChanged = this.handleDestinationChanged.bind(this);
 
-    this.state = { DwellTime: 15, Arrivaltime: this.initializeArrivalTime(), MinBuses:1, MaxBuses:3};
+    this.state = { DwellTime: 15, Arrivaltime: this.initializeArrivalTime(), MinBuses:1, MaxBuses:3, BusCapacity:50};
     this.handleDwellTimeChanged = this.handleDwellTimeChanged.bind(this);
     //this.handleSingleItinerarySearch = this.handleSingleItinerarySearch.bind(this);
     this.handleMultipleItinerarySearch = this.handleMultipleItinerarySearch.bind(this);
@@ -41,6 +42,7 @@ export class LandingPageControl extends React.Component<
     this.handleArrivalTimeChanged = this.handleArrivalTimeChanged.bind(this);
     this.handleMinBusesChanged = this.handleMinBusesChanged.bind(this);
     this.handleMaxBusesChanged = this.handleMaxBusesChanged.bind(this);
+    this.handleBusCapacityChanged = this.handleBusCapacityChanged.bind(this);
   }
   initializeArrivalTime(){
     let endOfToday = dateMath.endOf(new Date(),'day');
@@ -88,16 +90,23 @@ export class LandingPageControl extends React.Component<
       value={this.state.Arrivaltime}
       onChange={this.handleArrivalTimeChanged}
     />
-    Enter min buses:<br/>
+    <div>
+    Enter min buses:</div>
     <input value={this.state.MinBuses} onChange={this.handleMinBusesChanged}/>
-    Enter max buses:<br/>
+    <div>Enter max buses:</div>
     <input value={this.state.MaxBuses}  onChange={this.handleMaxBusesChanged}/>
+     <div>Enter bus capacity:</div>
+   <input value={this.state.BusCapacity}  onChange={this.handleBusCapacityChanged}/>
+    
         <LocationRiderCollectionControl handleLocationRidersChanged={(e)=>this.handleLocationRidersChanged(e)}
         />
         <button  onClick={()=>this.handleSearchItineraries()}>Search</button>
        <ItinerariesControl ItinerariesResponse={this.state.ItinerariesResponse}/>
       </div>
     );
+  }
+  handleBusCapacityChanged(e){
+    this.setState({BusCapacity:Number.parseInt(e.target.value)});
   }
   handleMinBusesChanged(e){
     this.setState({MinBuses:Number.parseInt(e.target.value)});
@@ -171,7 +180,8 @@ export class LandingPageControl extends React.Component<
       endLocation: this.state.Destination!.Coords!,
       endLocationName:this.state.Destination!.SearchResult!,
       minBuses:this.state.MinBuses,
-      maxBuses:this.state.MaxBuses
+      maxBuses:this.state.MaxBuses,
+      busCapacity:this.state.BusCapacity
     }) 
     .then((i: ItinerariesResponse) => {
       this.setState({ ItinerariesResponse: i });

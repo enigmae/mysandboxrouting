@@ -22,13 +22,14 @@ export class ItineraryService implements IItineraryService {
     startTime = startTime.replace('P', 'T').replace('A','T');
     endTime = endTime.replace('P', 'T').replace('A','T');
     var agents = new Array();
-    var maxAgents = 3;
-    if(getItineraryRequest.numAgents==1){
-      maxAgents =1;
+    var maxAgents = getItineraryRequest.numAgents;
+    //TODO:Change for biz version
+    if(getItineraryRequest.numAgents>3){
+      maxAgents = 3;
     }
     for(var agentCount=0; agentCount<maxAgents; agentCount++){
       agents.push({
-          capacity:[50],
+          capacity:[getItineraryRequest.busCapacity],
           name: 'Agent_'+agentCount,
           shifts: [
             {
