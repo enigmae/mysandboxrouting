@@ -136,7 +136,7 @@ export class LandingPageControl extends React.Component<
       }
       let duration:number = existingDuration;
       
-      duration+=2;
+     // duration+=2;
       let startTime = dateMath.add(date, -duration, "minutes");
       i.StartTime = startTime;
       i.EndTime = dateMath.add(startTime, 1, "day");

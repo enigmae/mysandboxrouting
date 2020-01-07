@@ -185,33 +185,30 @@ export class ItinineraryResponse implements IItinineraryResponse{
     return new Date(dt.getTime() + minutes*60000);
   }
   readjustForArrival(date:Date){
-    this.instructionSets.forEach(instructionSet=>{
-      console.log("Readjusting for instruction set:"+JSON.stringify(instructionSet));
-    
-    let lastInstruction = instructionSet.instructions[instructionSet.instructions.length-1]; 
+    let lastInstruction = this.condensedInstructionSet.condensedInstructions[this.condensedInstructionSet.condensedInstructions.length-1]; 
     var endTime =new Date(lastInstruction.startTime);
     console.log("Readjusting for end time: "+endTime);
     console.log("dateDiff:"+dateDiff);
-    let diff:number =  new dateDiff(date, endTime).minutes()+1;
+    let diff:number =  new dateDiff(date, endTime).minutes()-1;
     console.log(`Got difference between '${date}' and ${lastInstruction.startTime} as ${diff}`);
     
-    instructionSet.instructions.forEach(instruction=>{
-       console.log(`Changing start time for instruction '${instruction.startTime}'`);
+ 
    
-      let date = new Date(instruction.startTime);
+    this.condensedInstructionSet.condensedInstructions.forEach(condensedInstruction=>{
+         console.log(`Changing start time for instruction '${condensedInstruction.startTime}'`);
+    console.log("Readjusting for instruction set:"+JSON.stringify(condensedInstruction));
+      let date = new Date(condensedInstruction.startTime);
         console.log(`Changing start time for instruction date:'${date}'`);
       let addmin = this.add_minutes(date, diff);
       console.log(`Added '${diff}' minutes to ${date}:${addmin}`);
-      instruction.startTime = dateformat(addmin, 'yyyy-mm-ddThh:MM:ss');
+      condensedInstruction.startTime = dateformat(addmin, 'yyyy-mm-ddThh:MM:ss');
       
-      if(instruction.endTime){
-        date = new Date(instruction.endTime);
+      if(condensedInstruction.endTime){
+        date = new Date(condensedInstruction.endTime);
         addmin = this.add_minutes(date, diff);
-       instruction.endTime = dateformat(addmin, 'yyyy-mm-ddThh:MM:ss');
-     }    
-          console.log(`Set startTime to ${instruction.startTime}`);
-    });
-    instructionSet.recalculateDuration();
+       condensedInstruction.endTime = dateformat(addmin, 'yyyy-mm-ddThh:MM:ss');
+    console.log(`Set startTime to ${condensedInstruction.startTime}`);
+   }  
   });
   }
 }
