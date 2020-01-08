@@ -1,4 +1,5 @@
 import * as React from "react";
+import * as NumericInput from "react-numeric-input";
 import { LocationRiderCollectionControl } from "./locationRiderCollectionControl";
 import { ISearchResult, ISearchParam, SearchParam } from "./enterLocationControl";
 import { IItinineraryResponse, instructionSet, IItineraryService, ItinerariesResponse } from "../Services/itinerary";
@@ -79,8 +80,8 @@ export class LandingPageControl extends React.Component<
         <div>
           Enter dwell time:
           <br />
-          <input
-            value={this.state.DwellTime}
+          <NumericInput
+            value={this.state.DwellTime} max={120}
             onChange={this.handleDwellTimeChanged}
           />
         </div>
@@ -92,11 +93,11 @@ export class LandingPageControl extends React.Component<
     />
     <div>
     Enter min buses:</div>
-    <input value={this.state.MinBuses} onChange={this.handleMinBusesChanged}/>
+    <NumericInput value={this.state.MinBuses} onChange={this.handleMinBusesChanged} min={1} max={3}/>
     <div>Enter max buses:</div>
-    <input value={this.state.MaxBuses}  onChange={this.handleMaxBusesChanged}/>
+    <NumericInput min={1} max={3} value={this.state.MaxBuses}  onChange={this.handleMaxBusesChanged}/>
      <div>Enter bus capacity:</div>
-   <input value={this.state.BusCapacity}  onChange={this.handleBusCapacityChanged}/>
+   <NumericInput value={this.state.BusCapacity}  onChange={this.handleBusCapacityChanged} max={100} min={1} />
     
         <LocationRiderCollectionControl handleLocationRidersChanged={(e)=>this.handleLocationRidersChanged(e)}
         />
@@ -106,14 +107,14 @@ export class LandingPageControl extends React.Component<
     );
   }
   handleBusCapacityChanged(e){
-    this.setState({BusCapacity:Number.parseInt(e.target.value)});
+    this.setState({BusCapacity:e});
   }
   handleMinBusesChanged(e){
-    this.setState({MinBuses:Number.parseInt(e.target.value)});
+    this.setState({MinBuses:e});
   }
   
   handleMaxBusesChanged(e){
-    this.setState({MaxBuses:Number.parseInt(e.target.value)});
+    this.setState({MaxBuses:e});
   }
 
   handleLocationRidersChanged(locationRiders:ILocationRider[]){

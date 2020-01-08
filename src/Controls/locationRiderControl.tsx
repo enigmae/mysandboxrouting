@@ -31,9 +31,15 @@ ILocationRiderControlState>{
   handleSearchResultChanged(e: ISearchResult) {
         console.log("handleSearchResultsChanged ");
         this.setState({ SearchResult: e.SearchResult, Coords:e.Coords!}, this.resetSubmitEnabled);
+        if(this.state.Submitted){
+          this.notifySubmitLocationRider();
+        }
       }
   handleAddLocationClicked(){
-      this.props.submitLocationRider(this.state);
+    this.notifySubmitLocationRider();
+  }
+  notifySubmitLocationRider(){
+         this.props.submitLocationRider(this.state);
   }
   resetSubmitEnabled(){
     if(this.state.NumRiders && this.state.SearchResult){

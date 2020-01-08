@@ -1,12 +1,36 @@
 import * as Enumerable from 'linq';
 import { IItineraryService, ItinerariesRequest, ItinerariesResponse, IItinineraryResponse } from "./itinerary";
+import { ISearchParam, ISearchResult } from '../Controls/enterLocationControl';
 export interface IItineraryCollectionService{
   getItineraries(getItinerariesRequest: ItinerariesRequest): Promise<ItinerariesResponse>;
 } 
 export class ItineraryCollectionService implements IItineraryCollectionService{
   constructor(private itinerary: IItineraryService) {
   }
+   addExtraStops(getItinerariesRequest:ItinerariesRequest){
+      let additionalStops = new Array<ISearchParam>();
+      for(let searchResult of getItinerariesRequest.searchResults){
+        if(searchResult.Riders!>getItinerariesRequest.busCapacity){
+          let riders = searchResult.Riders!;
+          let numAdditionalStops = Math.floor(riders/getItinerariesRequest.busCapacity);
+          let leftOver = riders%getItinerariesRequest.busCapacity;
+          if(leftOver==0){
+            numAdditionalStops--;
+          }
+          searchResult.Riders = getItinerariesRequest.busCapacity;
+          let additionalStop = {...searchResult};
+          for(let addStops = 1; addStops<=numAdditionalStops; addStops++){
+            additionalStops.push(additionalStop);
+          }
+          if(leftOver!=0){
+            additionalStops[additionalStops.length-1].Riders = leftOver;
+          }
+        }
+      }
+      additionalStops.forEach(i=> getItinerariesRequest.searchResults.push(i));
+   }
   async getItineraries(getItinerariesRequest: ItinerariesRequest): Promise<ItinerariesResponse> {
+    this.addExtraStops(getItinerariesRequest);
     let response = new Array<Promise<IItinineraryResponse>>();
     for(var numAgents = getItinerariesRequest.minBuses; numAgents<= getItinerariesRequest.maxBuses; numAgents++){
     for (let result of getItinerariesRequest.searchResults) {

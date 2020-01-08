@@ -59,10 +59,14 @@ export interface instruction {
   duration: string;
   pickupRiders:number;
 }
+export interface missedCity{
+  city:string;
+  riders:number;
+}
 export class condensedInstructionSet{
   public totalMiles:number=0;
   public numAgents:number;
-  constructor(public condensedInstructions:condensedInstruction[], public  endLocationName:string, public durationMinutes:number, public missedCities?:Array<string>){
+  constructor(public condensedInstructions:condensedInstruction[], public  endLocationName:string, public durationMinutes:number, public missedCities?:Array<missedCity>){
     let agentNames = new Set<string>();
     for(let i = 0; i<condensedInstructions.length;i++){
       this.totalMiles+=condensedInstructions[i].miles;
@@ -171,13 +175,13 @@ export class ItinineraryResponse implements IItinineraryResponse{
   public instructionSets:instructionSet[];
   public condensedInstructionSet:condensedInstructionSet;
   public citiesVisited:Array<string>;
-  public citiesMissed:Array<string>;
+  public citiesMissed:Array<missedCity>;
   constructor(public resourceSets: resourceSet[], public destinationName:string){
     this.instructionSets = Enumerable.from(this.resourceSets[0].resources[0].agentItineraries).where(i=>i.instructions.length>3).toArray().map(i=> new instructionSet(i, destinationName));
     var instructionsSetsLinq = Enumerable.from(this.instructionSets);
     var orderedInstructions = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).orderBy(i=>i.startTime).toArray();
     this.citiesVisited = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).selectMany(i=>i.location).distinct().toArray();
-    this.citiesMissed = Enumerable.from(this.resourceSets[0].resources[0].unscheduledItems).select(i=>i.name).toArray();
+    this.citiesMissed = Enumerable.from(this.resourceSets[0].resources[0].unscheduledItems).select(i=> {return {city:i.name, riders:i.quantity[0]}}).toArray();
     this.condensedInstructionSet = new condensedInstructionSet(orderedInstructions, destinationName, instructionsSetsLinq.max(i=>i.durationMinutes), this.citiesMissed);
     
   }
