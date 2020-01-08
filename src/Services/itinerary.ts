@@ -181,7 +181,7 @@ export class ItinineraryResponse implements IItinineraryResponse{
     var instructionsSetsLinq = Enumerable.from(this.instructionSets);
     var orderedInstructions = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).orderBy(i=>i.startTime).toArray();
     this.citiesVisited = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).selectMany(i=>i.location).distinct().toArray();
-    this.citiesMissed = Enumerable.from(this.resourceSets[0].resources[0].unscheduledItems).select(i=> {return {city:i.name, riders:i.quantity[0]}}).toArray();
+    this.citiesMissed = Enumerable.from(this.resourceSets[0].resources[0].unscheduledItems).select(i=> {return {city: i.name, riders:i.quantity[0]}}).toArray();
     this.condensedInstructionSet = new condensedInstructionSet(orderedInstructions, destinationName, instructionsSetsLinq.max(i=>i.durationMinutes), this.citiesMissed);
     
   }
@@ -189,30 +189,29 @@ export class ItinineraryResponse implements IItinineraryResponse{
     return new Date(dt.getTime() + minutes*60000);
   }
   readjustForArrival(date:Date){
-    let lastInstruction = this.condensedInstructionSet.condensedInstructions[this.condensedInstructionSet.condensedInstructions.length-1]; 
-    var endTime =new Date(lastInstruction.startTime);
-    console.log("Readjusting for end time: "+endTime);
-    console.log("dateDiff:"+dateDiff);
-    let diff:number =  new dateDiff(date, endTime).minutes()-1;
-    console.log(`Got difference between '${date}' and ${lastInstruction.startTime} as ${diff}`);
-    
- 
-   
-    this.condensedInstructionSet.condensedInstructions.forEach(condensedInstruction=>{
-         console.log(`Changing start time for instruction '${condensedInstruction.startTime}'`);
-    console.log("Readjusting for instruction set:"+JSON.stringify(condensedInstruction));
-      let date = new Date(condensedInstruction.startTime);
-        console.log(`Changing start time for instruction date:'${date}'`);
-      let addmin = this.add_minutes(date, diff);
-      console.log(`Added '${diff}' minutes to ${date}:${addmin}`);
-      condensedInstruction.startTime = dateformat(addmin, 'yyyy-mm-ddThh:MM:ss');
-      
-      if(condensedInstruction.endTime){
-        date = new Date(condensedInstruction.endTime);
-        addmin = this.add_minutes(date, diff);
-       condensedInstruction.endTime = dateformat(addmin, 'yyyy-mm-ddThh:MM:ss');
-    console.log(`Set startTime to ${condensedInstruction.startTime}`);
-   }  
+    Enumerable.from(this.condensedInstructionSet.condensedInstructions).groupBy(i=>i.agent)
+      .forEach(condensedInstructionAgent=>{
+          let lastInstruction = condensedInstructionAgent.last();
+          let endTime =new Date(lastInstruction.startTime);
+          console.log("Readjusting for end time: "+endTime);
+          console.log("dateDiff:"+dateDiff);
+          let diff:number =  new dateDiff(date, endTime).minutes()-1;
+          console.log(`Got difference between '${date}' and ${lastInstruction.startTime} as ${diff}`);
+          condensedInstructionAgent.forEach(condensedInstruction=>{
+            console.log(`Changing start time for instruction '${condensedInstruction.startTime}'`);
+            console.log("Readjusting for instruction set:"+JSON.stringify(condensedInstruction));
+            let date = new Date(condensedInstruction.startTime);
+            console.log(`Changing start time for instruction date:'${date}'`);
+            let addmin = this.add_minutes(date, diff);
+            console.log(`Added '${diff}' minutes to ${date}:${addmin}`);
+            condensedInstruction.startTime = dateformat(addmin, 'yyyy-mm-ddThh:MM:ss');
+            if(condensedInstruction.endTime){
+              date = new Date(condensedInstruction.endTime);
+              addmin = this.add_minutes(date, diff);
+              condensedInstruction.endTime = dateformat(addmin, 'yyyy-mm-ddThh:MM:ss');
+              console.log(`Set startTime to ${condensedInstruction.startTime}`);        
+            }
+      });
   });
   }
 }
