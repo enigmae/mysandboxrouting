@@ -161,7 +161,6 @@ export class EnterLocationControl extends React.Component<
           onChange={this.handleSearchChanged}
           onBlur={this.handleSearchBlur}
           onKeyDown={this.handleKeyDown}
-          readOnly={this.state.Submitted}
           ref={input => (this.inputElement = input)}
         />
         {searchResult}
