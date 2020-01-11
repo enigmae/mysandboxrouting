@@ -66,8 +66,15 @@ export interface missedCity{
 export class condensedInstructionSet{
   public totalMiles:number=0;
   public numAgents:number;
-  constructor(public condensedInstructions:condensedInstruction[], public  endLocationName:string, public durationMinutes:number, public missedCities?:Array<missedCity>){
+  
+  constructor(public condensedInstructions:condensedInstruction[], public  endLocationName:string, public durationMinutes:number, public minDistance:number,
+  public maxDistance:number,
+  public minRouteTime:number,
+  public maxRouteTime:number,
+  public missedCities?:Array<missedCity>
+  ){
     let agentNames = new Set<string>();
+    
     for(let i = 0; i<condensedInstructions.length;i++){
       this.totalMiles+=condensedInstructions[i].miles;
       agentNames.add(condensedInstructions[i].agent);
@@ -130,7 +137,12 @@ export class instructionSet{
     let condensed = new Array<condensedInstruction>();
     var mileCount = 0;
     var first = true;
-    for(let index = 1; index<this.instructions.length-1;index++){
+     let skip = 1;
+      if(this.instructions[0].instructionType=="LeaveFromStartPoint" && this.instructions[0].distance)
+        {
+          skip = 2;
+        }
+    for(let index = skip; index<this.instructions.length-1;index++){
       let visit = this.instructions[index];
      // let travel = this.instructions[index+1];
       if(visit.instructionType=='VisitLocation'){
@@ -176,14 +188,18 @@ export class ItinineraryResponse implements IItinineraryResponse{
   public condensedInstructionSet:condensedInstructionSet;
   public citiesVisited:Array<string>;
   public citiesMissed:Array<missedCity>;
+
   constructor(public resourceSets: resourceSet[], public destinationName:string){
-    this.instructionSets = Enumerable.from(this.resourceSets[0].resources[0].agentItineraries).where(i=>i.instructions.length>3).toArray().map(i=> new instructionSet(i, destinationName));
+    this.instructionSets = Enumerable.from(this.resourceSets[0].resources[0].agentItineraries).where(i=>i.instructions.length>3).toArray()
+    .map(i=> {
+          return new instructionSet(i, destinationName);
+    });
     var instructionsSetsLinq = Enumerable.from(this.instructionSets);
     var orderedInstructions = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).orderBy(i=>i.startTime).toArray();
     this.citiesVisited = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).selectMany(i=>i.location).distinct().toArray();
     this.citiesMissed = Enumerable.from(this.resourceSets[0].resources[0].unscheduledItems).select(i=> {return {city: i.name, riders:i.quantity[0]}}).toArray();
-    this.condensedInstructionSet = new condensedInstructionSet(orderedInstructions, destinationName, instructionsSetsLinq.max(i=>i.durationMinutes), this.citiesMissed);
-    
+    var duration = instructionsSetsLinq.min(i=>i.durationMinutes);
+    this.condensedInstructionSet = new condensedInstructionSet(orderedInstructions, destinationName, duration, instructionsSetsLinq.min(i=>i.distance), instructionsSetsLinq.max(i=>i.distance),duration, instructionsSetsLinq.max(i=>i.durationMinutes), this.citiesMissed);
   }
    add_minutes(dt:Date, minutes:number):Date {
     return new Date(dt.getTime() + minutes*60000);

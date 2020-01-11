@@ -30,7 +30,7 @@ export class ItineraryService implements IItineraryService {
     for(var agentCount=0; agentCount<maxAgents; agentCount++){
       agents.push({
           capacity:[getItineraryRequest.busCapacity],
-          name: 'Agent_'+agentCount,
+          name: 'Bus_'+(agentCount+1),
           shifts: [
             {
               startTime: startTime,

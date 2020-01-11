@@ -22,7 +22,16 @@ interface IDisplayItinerariesState {
   Arrivaltime:Date;
   MinBuses:number;
   MaxBuses:number;
-  BusCapacity:number
+  BusCapacity:number,
+  Loading:boolean,
+  CanSubmit:boolean
+}
+export interface visibility{
+  visibility:'visible'|'hidden';
+}
+export function boolVis(isVisible:boolean):visibility{
+  
+  return {visibility: isVisible ? 'visible':'hidden'}
 }
 export class LandingPageControl extends React.Component<
   {},
@@ -34,7 +43,7 @@ export class LandingPageControl extends React.Component<
     this.itineraryCollection = new ItineraryCollectionService(this.itinerary);
     this.handleDestinationChanged = this.handleDestinationChanged.bind(this);
 
-    this.state = { DwellTime: 15, Arrivaltime: this.initializeArrivalTime(), MinBuses:1, MaxBuses:3, BusCapacity:50};
+    this.state = { DwellTime: 15, Arrivaltime: this.initializeArrivalTime(), MinBuses:1, MaxBuses:3, BusCapacity:50, Loading:false, CanSubmit:false};
     this.handleDwellTimeChanged = this.handleDwellTimeChanged.bind(this);
     //this.handleSingleItinerarySearch = this.handleSingleItinerarySearch.bind(this);
     this.handleMultipleItinerarySearch = this.handleMultipleItinerarySearch.bind(this);
@@ -64,8 +73,7 @@ export class LandingPageControl extends React.Component<
      <li><InstructionSummaryControl condensedInstructionSet = {m.condensedInstructionSet}/></li>);
       responseList = <ol>{instructionList}</ol>;
     }
-    return (
-      <div>
+    return (<div>
         <div>
           Enter destination:
           <div>
@@ -101,10 +109,11 @@ export class LandingPageControl extends React.Component<
     
         <LocationRiderCollectionControl handleLocationRidersChanged={(e)=>this.handleLocationRidersChanged(e)}
         />
-        <button  onClick={()=>this.handleSearchItineraries()}>Search</button>
+        <button  onClick={()=>this.handleSearchItineraries()} style={{...boolVis(this.state.CanSubmit)}}>Search</button>
+       <div style={{visibility: this.state.Loading ? 'visible': 'hidden'}}>Loading...</div>
        <ItinerariesControl ItinerariesResponse={this.state.ItinerariesResponse}/>
       </div>
-    );
+    )
   }
   handleBusCapacityChanged(e){
     this.setState({BusCapacity:e});
@@ -120,6 +129,9 @@ export class LandingPageControl extends React.Component<
   handleLocationRidersChanged(locationRiders:ILocationRider[]){
    var result = Enumerable.from(locationRiders).select((val)=>new SearchParam(val.SearchResult!, val.NumRiders!, val.Coords!)).toArray();
    this.setState({SearchResults:result});
+   if(this.state.Destination){
+     this.setState({CanSubmit: true});
+   }
   }
 
   handleArrivalTimeChanged(date:Date){
@@ -175,6 +187,7 @@ export class LandingPageControl extends React.Component<
     this.setState({SearchResults:searchResults});
   }
   handleSearchItineraries(skipReadjust:boolean=false){
+    this.setState({Loading:true});
     this.itineraryCollection.getItineraries({
       dwellTime: this.state.DwellTime!,
       searchResults: this.state.SearchResults!,
@@ -192,7 +205,7 @@ export class LandingPageControl extends React.Component<
     }).then(()=>{
       if(!skipReadjust)
         this.handleReadjustForArrivalBySubtractDuration(this.state.Arrivaltime);
-    });
+    }).finally(()=>this.setState({Loading:false}));
   }
   handleDestinationChanged(e: ISearchResult) {
     console.log("handle destination changed:" + JSON.stringify(e));
