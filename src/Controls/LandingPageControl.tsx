@@ -109,7 +109,7 @@ export class LandingPageControl extends React.Component<
     
         <LocationRiderCollectionControl handleLocationRidersChanged={(e)=>this.handleLocationRidersChanged(e)}
         />
-        <button  onClick={()=>this.handleSearchItineraries()} style={{...boolVis(this.state.CanSubmit)}}>Search</button>
+        <button  onClick={()=>this.handleSearchItineraries()} disabled={!this.state.CanSubmit}>Search</button>
        <div style={{visibility: this.state.Loading ? 'visible': 'hidden'}}>Loading...</div>
        <ItinerariesControl ItinerariesResponse={this.state.ItinerariesResponse}/>
       </div>
