@@ -18,7 +18,7 @@ class HoursMinutes{
     minutes:number;
     constructor(totalMinutes:number){
         this.hours = Math.floor(totalMinutes/60);
-        this.minutes = Math.round(totalMinutes%60);
+        this.minutes = Math.round(totalMinutes%60+0);
     }
 }
 export class InstructionSummaryControl extends React.Component<IInstructionSummaryControlProps, IInstructionSummaryControlState>{
