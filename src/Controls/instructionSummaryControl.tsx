@@ -13,14 +13,7 @@ export interface IInstructionSummaryControlState{
     totalDistance:number;
     startingPoint:string;
 }
-class HoursMinutes{
-    hours:number;
-    minutes:number;
-    constructor(totalMinutes:number){
-        this.hours = Math.floor(totalMinutes/60);
-        this.minutes = Math.round(totalMinutes%60+0);
-    }
-}
+
 export class InstructionSummaryControl extends React.Component<IInstructionSummaryControlProps, IInstructionSummaryControlState>{
     constructor(props){
         super(props);
@@ -49,10 +42,8 @@ export class InstructionSummaryControl extends React.Component<IInstructionSumma
             citiesMissed = citiesMissed.substr(0, citiesMissed.length-2);
             citiesMissed+=']';
         }
-        let minHoursMinutes = new HoursMinutes(this.props.condensedInstructionSet.minRouteTime);
-        let maxHoursMinutes = new HoursMinutes(this.props.condensedInstructionSet.maxRouteTime);
-        
-        let fullSummary = `Total Time:${this.state.totalHours} hrs ${this.state.totalMinutes.toFixed()} min Total Distance:${this.props.condensedInstructionSet.totalMiles.toFixed(1)} mi #Buses:${this.props.condensedInstructionSet.numAgents} Min Dist:${this.props.condensedInstructionSet.minDistance.toFixed(1)} mi Max Dist:${this.props.condensedInstructionSet.maxDistance.toFixed(1)} mi Min Time:${minHoursMinutes.hours} hrs ${minHoursMinutes.minutes} min Max Time:${maxHoursMinutes.hours} hrs ${maxHoursMinutes.minutes} min ${citiesMissed}`;
+         
+        let fullSummary = `Total Time:${this.state.totalHours} hrs ${this.state.totalMinutes.toFixed()} min Total Distance:${this.props.condensedInstructionSet.totalMiles.toFixed(1)} mi #Buses:${this.props.condensedInstructionSet.numAgents} Min Dist:${this.props.condensedInstructionSet.minDistance.toFixed(1)} mi Max Dist:${this.props.condensedInstructionSet.maxDistance.toFixed(1)} mi ${citiesMissed}`;
         return <Collapsible trigger={fullSummary}>
                 <ItineraryInstructionsControl condensedInstructions={this.props.condensedInstructionSet}/>
             </Collapsible>

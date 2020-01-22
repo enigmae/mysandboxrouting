@@ -13,6 +13,7 @@
     "date-arithmetic": "^4.0.1",
     "date-diff": "^0.2.1",
     "dateformat": "^3.0.3",
+    "guid-typescript": "^1.0.9",
     "linq": "^3.2.1",
     "react": "16.8.4",
     "react-collapsible": "^2.6.2",

@@ -4,6 +4,14 @@ import * as linq from "linq";
 export interface InstructionControlProps{
     condensedInstructions:condensedInstructionSet;
 }
+class HoursMinutes{
+    hours:number;
+    minutes:number;
+    constructor(totalMinutes:number){
+        this.hours = Math.floor(totalMinutes/60);
+        this.minutes = Math.round(totalMinutes%60+0);
+    }
+}
 export class ItineraryInstructionsControl extends React.Component<InstructionControlProps>{
   formatDate(date:string){
     if(!date)
@@ -22,7 +30,10 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
       return date;
   }
     render(){
-      
+      let minHoursMinutes = new HoursMinutes(this.props.condensedInstructions.minRouteTime);
+        let maxHoursMinutes = new HoursMinutes(this.props.condensedInstructions.maxRouteTime);
+         let fullSummary = `Min Dist:${this.props.condensedInstructions.minDistance.toFixed(1)} mi Max Dist:${this.props.condensedInstructions.maxDistance.toFixed(1)} mi Min Time:${minHoursMinutes.hours} hrs ${minHoursMinutes.minutes} min Max Time:${maxHoursMinutes.hours} hrs ${maxHoursMinutes.minutes} min`;
+       
         let instructionRenders = linq.from(this.props.condensedInstructions.condensedInstructions).toArray().map(
             (i) => {
               let loc;
@@ -44,7 +55,9 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
               return <tr>{agent}{location}{arrive}{leave}{quantity}{miles}</tr>;
             }
           );
-        return <table>
+        return <div>
+        <h3>{fullSummary}</h3>
+        <table>
     <tr>
     <th>Agent</th>
     <th>Location</th>
@@ -54,6 +67,6 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
     <th>Miles</th>
   </tr>
     {instructionRenders}
-    </table>
+    </table></div>
     }
 }

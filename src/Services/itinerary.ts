@@ -110,6 +110,12 @@ export class instructionSet{
   get startingPoint():string{
     return this.instructions[2].itineraryItem.name;
   }
+  filterInstructions(instructions:instruction[]):instruction[]{
+    if(instructions[0].instructionType=='LeaveFromStartPoint'){
+      return Enumerable.from(instructions).skip(2).toArray();
+    }
+    return instructions;
+  }
   distance:number;
   durationMinutes:number;
   private calcdistance(){
@@ -198,7 +204,7 @@ export class ItinineraryResponse implements IItinineraryResponse{
     var orderedInstructions = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).orderBy(i=>i.startTime).toArray();
     this.citiesVisited = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).selectMany(i=>i.location).distinct().toArray();
     this.citiesMissed = Enumerable.from(this.resourceSets[0].resources[0].unscheduledItems).select(i=> {return {city: i.name, riders:i.quantity[0]}}).toArray();
-    var duration = instructionsSetsLinq.min(i=>i.durationMinutes);
+    var duration = instructionsSetsLinq.max(i=>i.durationMinutes);
     this.condensedInstructionSet = new condensedInstructionSet(orderedInstructions, destinationName, duration, instructionsSetsLinq.min(i=>i.distance), instructionsSetsLinq.max(i=>i.distance),duration, instructionsSetsLinq.max(i=>i.durationMinutes), this.citiesMissed);
   }
    add_minutes(dt:Date, minutes:number):Date {

@@ -13,6 +13,7 @@ import * as dateMath from 'date-arithmetic';
 import { ItinerariesControl } from "./itinerariesControl";
 import { ILocationRider } from "./locationRiderControl";
 import Enumerable from "linq";
+import { BusCapacityControl, CapacityKey } from "./BusCapacityControl";
 interface IDisplayItinerariesState {
   SearchResults?: ISearchParam[];
   Destination?: ISearchResult;
@@ -24,7 +25,8 @@ interface IDisplayItinerariesState {
   MaxBuses:number;
   BusCapacity:number,
   Loading:boolean,
-  CanSubmit:boolean
+  CanSubmit:boolean,
+  BusCapacities?:Array<CapacityKey>
 }
 export interface visibility{
   visibility:'visible'|'hidden';
@@ -53,6 +55,7 @@ export class LandingPageControl extends React.Component<
     this.handleMinBusesChanged = this.handleMinBusesChanged.bind(this);
     this.handleMaxBusesChanged = this.handleMaxBusesChanged.bind(this);
     this.handleBusCapacityChanged = this.handleBusCapacityChanged.bind(this);
+    this.handleBusCapacitiesChanged = this.handleBusCapacitiesChanged.bind(this);
   }
   initializeArrivalTime(){
     let endOfToday = dateMath.endOf(new Date(),'day');
@@ -106,7 +109,7 @@ export class LandingPageControl extends React.Component<
     <NumericInput min={1} max={3} value={this.state.MaxBuses}  onChange={this.handleMaxBusesChanged}/>
      <div>Enter bus capacity:</div>
    <NumericInput value={this.state.BusCapacity}  onChange={this.handleBusCapacityChanged} max={100} min={1} />
-    
+    <BusCapacityControl handleBusCapacityChanged={this.handleBusCapacitiesChanged} />
         <LocationRiderCollectionControl handleLocationRidersChanged={(e)=>this.handleLocationRidersChanged(e)}
         />
         <button  onClick={()=>this.handleSearchItineraries()} disabled={!this.state.CanSubmit}>Search</button>
@@ -114,6 +117,9 @@ export class LandingPageControl extends React.Component<
        <ItinerariesControl ItinerariesResponse={this.state.ItinerariesResponse}/>
       </div>
     )
+  }
+  handleBusCapacitiesChanged(e){
+    this.setState({BusCapacities:e});
   }
   handleBusCapacityChanged(e){
     this.setState({BusCapacity:e});
