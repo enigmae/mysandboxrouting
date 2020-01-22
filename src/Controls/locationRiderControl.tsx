@@ -37,6 +37,7 @@ ILocationRiderControlState>{
       }
   handleAddLocationClicked(){
     this.notifySubmitLocationRider();
+    this.setState({Submitted:true});
   }
   notifySubmitLocationRider(){
          this.props.submitLocationRider(this.state);
@@ -60,7 +61,7 @@ ILocationRiderControlState>{
         />
         <div style={{display:"inline-block"}}>
         <label className="RidersLabel"># Riders</label><input className="Riders" value={this.state.NumRiders} onChange={this.handleRidersChanged}/>
-        <button className="AddLocation" onClick={this.handleAddLocationClicked} disabled={!this.state.SubmitEnabled}>Add location</button>
+        <button className="AddLocation" onClick={this.handleAddLocationClicked} disabled={!this.state.SubmitEnabled} style={{visibility:this.state.Submitted ? 'hidden':'visible'}}>Add location</button>
         </div></tr></table>
     }
 }
