@@ -66,22 +66,43 @@ export interface missedCity{
 export class condensedInstructionSet{
   public totalMiles:number=0;
   public numAgents:number;
-  
-  constructor(public condensedInstructions:condensedInstruction[], public  endLocationName:string, public durationMinutes:number, public minDistance:number,
-  public maxDistance:number,
-  public minRouteTime:number,
-  public maxRouteTime:number,
+  public maxRouteTime:number;
+  public minDistance:number;
+  public maxDistance:number;
+  public minRouteTime:number;
+  constructor(public condensedInstructions:condensedInstruction[], public  endLocationName:string, 
   public missedCities?:Array<missedCity>
   ){
     let agentNames = new Set<string>();
-    
+    var instructionsSetsLinq = Enumerable.from(condensedInstructions);
+    var instructionsByAgent = instructionsSetsLinq.groupBy(i=>i.agent);
+    this.maxRouteTime = instructionsByAgent.max(i=>(new dateDiff(new Date(i.last().startTime), new Date(i.first().startTime))).minutes());
+    this.minRouteTime = instructionsByAgent.min(i=>(new dateDiff(new Date(i.last().startTime),new Date(i.first().startTime))).minutes());
+    this.minDistance =instructionsByAgent.min(i=>i.sum(m=>m.miles));
+    this.maxDistance =instructionsByAgent.max(i=>i.sum(m=>m.miles));
     for(let i = 0; i<condensedInstructions.length;i++){
       this.totalMiles+=condensedInstructions[i].miles;
       agentNames.add(condensedInstructions[i].agent);
     } 
     this.numAgents = agentNames.size;
+    this.durationMinutes = this.calculateDuration();
+   }
+  durationMinutes:number;
+ 
+  private adjustTimeFormat(instruction:condensedInstruction){
+    instruction.startTime = instruction.startTime.replace('P', 'T').replace('A','T');
   }
+  private calcMinutes(){
+   let diff = new dateDiff(new Date(this.condensedInstructions[this.condensedInstructions.length-1].startTime), new Date(this.condensedInstructions[0].startTime));
+    return diff.minutes();
+  }
+  calculateDuration(){
+  this.condensedInstructions.map(i=> this.adjustTimeFormat(i));
+   return this.calcMinutes();
+  }
+  
 }
+
 /*
 export class condensedInstructionSetCollection{
   public 
@@ -96,6 +117,10 @@ export interface condensedInstruction{
   miles:number;
   location:string;
   passengers:number;
+}
+interface multipleStopAggregation{
+  index:number;
+  aggregatedQuantities:number;
 }
 export class instructionSet{
   constructor(agentItinerary:agentItinerary, public endLocationName:string){
@@ -139,6 +164,17 @@ export class instructionSet{
   this.instructions.map(i=> this.adjustTimeFormat(i));
    this.durationMinutes = this.calcMinutes();
   }
+  
+  private multipleStopsAtStartingLocation(multipleStopAggregation:multipleStopAggregation):boolean{
+    let visit = this.instructions[multipleStopAggregation.index];
+      let skipTwo = this.instructions.length>multipleStopAggregation.index+2 ? this.instructions[multipleStopAggregation.index+2] : undefined;
+      if(skipTwo && skipTwo.instructionType=='VisitLocation' && skipTwo.itineraryItem.name==visit.itineraryItem.name
+      && multipleStopAggregation.aggregatedQuantities>=0){
+        multipleStopAggregation.aggregatedQuantities +=  visit.itineraryItem.quantity[0]; 
+        return true;
+      }
+  return false;
+}
   get condensedInstructions():condensedInstruction[]{
     let condensed = new Array<condensedInstruction>();
     var mileCount = 0;
@@ -148,12 +184,18 @@ export class instructionSet{
         {
           skip = 2;
         }
+        let multipleStopAggregation:multipleStopAggregation = {index:0, aggregatedQuantities:0};
     for(let index = skip; index<this.instructions.length-1;index++){
       let visit = this.instructions[index];
-     // let travel = this.instructions[index+1];
       if(visit.instructionType=='VisitLocation'){
+        multipleStopAggregation.index = index;
+        if(this.multipleStopsAtStartingLocation(multipleStopAggregation)){
+          index++;
+          continue;
+        }
       condensed.push({agent:this.agent.name, startTime:visit.startTime, endTime:visit.endTime, location: visit.itineraryItem ? visit.itineraryItem.name : '',
-      miles:mileCount, passengers:visit.itineraryItem.quantity[0]});
+      miles:mileCount, passengers: visit.itineraryItem.quantity[0]+multipleStopAggregation.aggregatedQuantities});
+      multipleStopAggregation.aggregatedQuantities=0;
       }
       else{
         if(first){
@@ -163,6 +205,9 @@ export class instructionSet{
         }
       mileCount+=visit.distance*0.000621371;
       }
+    }
+    if(mileCount==NaN){
+      console.log('Mile count is nan for:'+JSON.stringify(this));
     }
     var arrival = this.instructions[this.instructions.length-1];
     condensed.push({agent:this.agent.name, startTime:arrival.startTime, location: this.endLocationName,
@@ -204,8 +249,7 @@ export class ItinineraryResponse implements IItinineraryResponse{
     var orderedInstructions = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).orderBy(i=>i.startTime).toArray();
     this.citiesVisited = instructionsSetsLinq.selectMany(i=>i.condensedInstructions).selectMany(i=>i.location).distinct().toArray();
     this.citiesMissed = Enumerable.from(this.resourceSets[0].resources[0].unscheduledItems).select(i=> {return {city: i.name, riders:i.quantity[0]}}).toArray();
-    var duration = instructionsSetsLinq.max(i=>i.durationMinutes);
-    this.condensedInstructionSet = new condensedInstructionSet(orderedInstructions, destinationName, duration, instructionsSetsLinq.min(i=>i.distance), instructionsSetsLinq.max(i=>i.distance),duration, instructionsSetsLinq.max(i=>i.durationMinutes), this.citiesMissed);
+    this.condensedInstructionSet = new condensedInstructionSet(orderedInstructions, destinationName, this.citiesMissed);
   }
    add_minutes(dt:Date, minutes:number):Date {
     return new Date(dt.getTime() + minutes*60000);
@@ -252,7 +296,7 @@ export interface getItineraryRequest {
   endTime?:Date;
   numAgents:number;
   endLocationName:string;
-  busCapacity:number;
+  busCapacities:Array<number>
 }
 export interface IItineraryService{
   getItinerary(
@@ -264,9 +308,10 @@ export interface ItinerariesRequest {
   endLocation: ILatLong;
   endLocationName:string;
   dwellTime: number;
-  minBuses:number;
-  maxBuses:number;
-  busCapacity:number;
+  //minBuses?:number;
+  //maxBuses?:number;
+  //busCapacity?:number;
+  busCapacities:Array<number>
 }
 export interface ItinerariesResponse {
   itineraries:IItinineraryResponse[];
