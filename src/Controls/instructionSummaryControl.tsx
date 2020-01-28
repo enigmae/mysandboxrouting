@@ -22,11 +22,12 @@ export class InstructionSummaryControl extends React.Component<IInstructionSumma
         this.state = {...collapsed, ...this.calculateState(), startingPoint:''};
     }
     calculateState(){
-        let calc = {totalHours:Math.floor(this.props.condensedInstructionSet.durationMinutes/60), 
-            totalMinutes:this.props.condensedInstructionSet.durationMinutes%60, totalDistance:this.props.condensedInstructionSet.totalMiles};
+        let calc = {totalHours:Math.floor(this.props.condensedInstructionSet.maxRouteTime/60), 
+            totalMinutes:this.props.condensedInstructionSet.maxRouteTime%60, totalDistance:this.props.condensedInstructionSet.totalMiles};
         return calc;
     }
     componentDidUpdate(){
+        return;
         let calc = this.calculateState();
             if(this.state.totalDistance!=calc.totalDistance || this.state.totalHours!=calc.totalHours || this.state.totalMinutes!=calc.totalMinutes){
                 this.setState(calc);        
