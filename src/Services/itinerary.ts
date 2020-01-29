@@ -86,6 +86,7 @@ export class condensedInstructionSet{
     } 
     this.numAgents = agentNames.size;
     this.durationMinutes = this.calculateDuration();
+    this.condensedInstructions = Enumerable.from(condensedInstructions).orderBy(i=>i.startTime).toArray();
    }
   durationMinutes:number;
  
