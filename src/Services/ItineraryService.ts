@@ -2,10 +2,21 @@ import * as request from "request-promise";
 import dateformat from 'dateformat';
 import {Semaphore} from 'await-semaphore';
 import { IItineraryService, getItineraryRequest, IItinineraryResponse, itineraryItem, ItineraryRequest, ItinineraryResponse } from "./itinerary";
+
+
 export class ItineraryService implements IItineraryService {
   semaphore = new Semaphore(7);
   constructor(private key:string='ArLJodQ7fEaQ2dfy3lIHWJrJILC35_Qj0EpT8TCy3ls96pl6sqCdlu18bo8j_tbM'){
     
+  }
+  getYesterday():Date{
+    var date = new Date();
+    date.setDate(date.getDate()-1);
+    return date;
+  }
+  addHours(date:Date, hours:number){
+    var date = new Date(date.getTime());
+    date.setTime(date.getTime()+(hours*60*60*1000));
   }
   async getItinerary(getItineraryRequest: getItineraryRequest): Promise<IItinineraryResponse> {
     var itineraryItems = getItineraryRequest.searchParams.map(sr => new itineraryItem(sr.SearchResult!, "00:" + getItineraryRequest.dwellTime + ":00", {
@@ -17,8 +28,8 @@ export class ItineraryService implements IItineraryService {
       longitude: getItineraryRequest.endLocation.Long
     }, '2019-11-16T16:00:00', '2019-11-16T18:00:00'));*/
     console.log("Searching for start time:"+getItineraryRequest.startTime);
-    let startTime = getItineraryRequest.startTime==undefined? "2019-11-16T08:00:00" : dateformat(getItineraryRequest.startTime, 'yyyy-mm-ddThh:MM:ss');
-    let endTime = getItineraryRequest.endTime==undefined?"2019-11-16T18:00:00" : dateformat(getItineraryRequest.endTime, 'yyyy-mm-ddThh:MM:ss');
+    let startTime = getItineraryRequest.startTime==undefined? dateformat(this.getYesterday(), 'yyyy-mm-ddThh:MM:ss') : dateformat(getItineraryRequest.startTime, 'yyyy-mm-ddThh:MM:ss');
+    let endTime = getItineraryRequest.endTime==undefined? dateformat(this.addHours(this.getYesterday(), 12), 'yyyy-mm-ddThh:MM:ss') : dateformat(getItineraryRequest.endTime, 'yyyy-mm-ddThh:MM:ss');
     startTime = startTime.replace('P', 'T').replace('A','T');
     endTime = endTime.replace('P', 'T').replace('A','T');
     var agents = new Array();

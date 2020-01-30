@@ -46,7 +46,7 @@ export class SearchParam implements ISearchParam{
 }
 export interface IEnterLocationControlProps {
   searchResultsChanged: (arg0: ISearchResult) => void;
-  SearchResult: ISearchResult;
+  SearchResult?: ISearchResult;
 }
 export class EnterLocationControl extends React.Component<
   IEnterLocationControlProps,
@@ -57,22 +57,39 @@ export class EnterLocationControl extends React.Component<
     this.handleSearchChanged = this.handleSearchChanged.bind(this);
     this.handleSearchBlur = this.handleSearchBlur.bind(this);
     this.handleKeyDown = this.handleKeyDown.bind(this);
-    let searchResult = '';
-    let coords = {Lat:0, Long:0};
-    if(props.SearchResult){
-      if(props.SearchResult.SearchResult)
-        searchResult = props.SearchResult.SearchResult;
-      if(props.SearchResult.Coords)
-        coords = props.SearchResult.Coords;
-    }
+    //TODO:Just set the default props
+    let stateFromProps = this.getStateFromprops();
     this.state = {
       SearchResultVisible: false,
-      SearchQuery: props.SearchResult ? props.SearchResult.SearchQuery : "",
-      SearchResult: searchResult,
-      Coords: coords
+      ...stateFromProps
     };
     this.inputElement = null;
   }
+  getStateFromprops(){
+    let searchResult = '';
+    let coords = {Lat:0, Long:0};
+   return {
+      SearchQuery: this.props.SearchResult && this.props.SearchResult.SearchQuery ? this.props.SearchResult.SearchQuery : "",
+      SearchResult: this.props.SearchResult && this.props.SearchResult.SearchResult? this.props.SearchResult.SearchResult : searchResult,
+      Coords: this.props.SearchResult && this.props.SearchResult.Coords ? this.props.SearchResult.Coords : coords
+    }
+  }
+  componentDidUpdate(prevProps:IEnterLocationControlProps, prevState:IEnterLocationState){
+    if(prevState.SearchQuery!=this.state.SearchQuery){
+      this.props.searchResultsChanged({
+        SearchResult: this.state.SearchResult,
+        Coords: this.state.Coords,
+        SearchQuery: this.state.SearchQuery
+      });
+      return;
+    }
+      if(prevProps.SearchResult && this.props.SearchResult){
+        if(prevProps.SearchResult.SearchQuery!=this.props.SearchResult.SearchQuery){
+          this.setState(this.getStateFromprops(), ()=> this.resetCoordsFromBing(this.props.SearchResult!.SearchQuery!));
+      }
+    }
+  }
+
   componentDidMount() {
     this.inputElement!.focus();
   }
@@ -85,7 +102,10 @@ export class EnterLocationControl extends React.Component<
       SearchQuery: event.target.value,
       SearchResultVisible: true
     });
-    getBingMapsResponse(event.target.value).then(i => {
+    this.resetCoordsFromBing(event.target.value);
+  }
+  resetCoordsFromBing(search:string){
+    getBingMapsResponse(search).then(i => {
 
       console.log("last query is " + this.state.LastQuery);
       console.log("maps Response: " + JSON.stringify(i));

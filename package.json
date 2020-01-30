@@ -27,15 +27,29 @@
     "typed-rest-client": "1.5.0"
   },
   "devDependencies": {
+    "@types/chai": "^4.2.7",
+    "@types/enzyme": "^3.10.4",
+    "@types/expect": "^24.3.0",
+    "@types/mocha": "^5.2.7",
     "@types/react": "16.8.8",
     "@types/react-dom": "16.8.2",
+    "chai": "^4.2.0",
+    "enzyme": "^3.11.0",
+    "enzyme-adapter-react-16": "^1.15.2",
+    "jsdom-global": "^3.0.2",
+    "mocha": "^7.0.1",
+    "nwb": "^0.23.0",
+    "nyc": "^15.0.0",
+    "ts-node": "^8.6.2",
     "typescript": "3.3.3"
   },
   "scripts": {
     "start": "react-scripts start",
     "build": "react-scripts build",
-    "test": "react-scripts test --env=jsdom",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "test": "mocha --timeout 5000 -p tests/tsconfig.json --require ts-node/register -r jsdom-global/register tests/*test.{tsx,ts}",
+    "test:coverage": "nwb test-react --coverage",
+    "test:watch": "nwb test-react --server"
   },
   "browserslist": [
     ">0.2%",

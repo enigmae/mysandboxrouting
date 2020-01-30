@@ -14,6 +14,8 @@ import { ItinerariesControl } from "./itinerariesControl";
 import { ILocationRider } from "./locationRiderControl";
 import Enumerable from "linq";
 import { BusCapacityControl, CapacityKey } from "./BusCapacityControl";
+import { RallyEventControl } from "./RallyEventControl";
+import { rallyTrip } from "../Services/rallyService";
 interface IDisplayItinerariesState {
   SearchResults?: ISearchParam[];
   Destination?: ISearchResult;
@@ -45,7 +47,9 @@ export class LandingPageControl extends React.Component<
     this.itineraryCollection = new ItineraryCollectionService(this.itinerary);
     this.handleDestinationChanged = this.handleDestinationChanged.bind(this);
 
-    this.state = { DwellTime: 15, Arrivaltime: this.initializeArrivalTime(), Loading:false,CanSubmit:false};
+    this.state = { DwellTime: 15, Arrivaltime: this.initializeArrivalTime(), Loading:false,CanSubmit:false, Destination:{
+      SearchQuery:'',
+    }};
     this.handleDwellTimeChanged = this.handleDwellTimeChanged.bind(this);
     //this.handleSingleItinerarySearch = this.handleSingleItinerarySearch.bind(this);
     this.handleMultipleItinerarySearch = this.handleMultipleItinerarySearch.bind(this);
@@ -53,12 +57,20 @@ export class LandingPageControl extends React.Component<
     this.handleReadjustForArrival = this.handleReadjustForArrival.bind(this);
     this.handleArrivalTimeChanged = this.handleArrivalTimeChanged.bind(this);
     this.handleBusCapacitiesChanged = this.handleBusCapacitiesChanged.bind(this);
+    this.handleRallyTripsRecieved = this.handleRallyTripsRecieved.bind(this);
   }
   initializeArrivalTime(){
     let endOfToday = dateMath.endOf(new Date(),'day');
     let ninePm = dateMath.add(endOfToday, 20, "hours");
     let subtractDay = dateMath.add(ninePm, -1, "day");
     return dateMath.add(subtractDay, 1, "minutes");
+  }
+  handleRallyTripsRecieved(rallyTrips:rallyTrip[]){
+    this.setState({Arrivaltime:rallyTrips[0].Schedule.DestinationArrivalTime, 
+      Destination:{
+        SearchQuery:rallyTrips[0].Schedule.DestinationCity.CityStateAbbr,
+        SearchResult:rallyTrips[0].Schedule.DestinationCity.CityStateAbbr
+      }})
   }
   itineraryCollection: ItineraryCollectionService;
   itinerary: IItineraryService;
@@ -74,14 +86,12 @@ export class LandingPageControl extends React.Component<
       responseList = <ol>{instructionList}</ol>;
     }
     return (<div>
+      <RallyEventControl rallyTripReceived={this.handleRallyTripsRecieved}/>
         <div>
           Enter destination:
           <div>
           <EnterLocationControl
-            SearchResult={{
-              SearchQuery: "",
-              SearchResult: undefined
-            }}
+            SearchResult={this.state.Destination!}
             searchResultsChanged={this.handleDestinationChanged}
           /></div>
         </div>
