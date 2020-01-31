@@ -74,13 +74,16 @@ export class EnterLocationControl extends React.Component<
       Coords: this.props.SearchResult && this.props.SearchResult.Coords ? this.props.SearchResult.Coords : coords
     }
   }
+  raiseSearchResultsChanged(){
+    this.props.searchResultsChanged({
+      SearchResult: this.state.SearchResult,
+      Coords: this.state.Coords,
+      SearchQuery: this.state.SearchQuery
+    });
+  }
   componentDidUpdate(prevProps:IEnterLocationControlProps, prevState:IEnterLocationState){
     if(prevState.SearchQuery!=this.state.SearchQuery){
-      this.props.searchResultsChanged({
-        SearchResult: this.state.SearchResult,
-        Coords: this.state.Coords,
-        SearchQuery: this.state.SearchQuery
-      });
+      this.raiseSearchResultsChanged();
       return;
     }
       if(prevProps.SearchResult && this.props.SearchResult){
@@ -114,7 +117,7 @@ export class EnterLocationControl extends React.Component<
       this.setState({
         SearchResult: i.name,
         Coords: { Lat: i.point.coordinates[0], Long: i.point.coordinates[1] }
-      });
+      }, this.raiseSearchResultsChanged);
     });
   }
   noticedChange(): boolean {
@@ -145,11 +148,8 @@ export class EnterLocationControl extends React.Component<
     this.setState({
       Submitted: true
     });
-    this.props.searchResultsChanged({
-      SearchResult: searchResult,
-      Coords: this.state.Coords,
-      SearchQuery: this.state.SearchQuery
-    });
+    this.raiseSearchResultsChanged();
+
   }
   handleKeyDown = (event: React.KeyboardEvent<HTMLDivElement>): void => {
     // 'keypress' event misbehaves on mobile so we track 'Enter' key via 'keydown' event

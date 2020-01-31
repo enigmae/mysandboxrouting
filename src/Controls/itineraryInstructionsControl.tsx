@@ -16,25 +16,33 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
   formatDate(date:string){
     if(!date)
     return '';
-    return new Date(this.fixPM(date)).toLocaleDateString();
-  }
+    return new Date(this.fixAMPM(date)).toLocaleDateString();
+  } 
   formatTime(date:string){
     if(!date)
     return '';
-    return new Date(this.fixPM(date)).toLocaleTimeString();
+    return new Date(this.fixAMPM(date)).toLocaleTimeString();
   }
-  fixPM(date:string){
+  fixAMPM(date:string){
     if(date.includes('P')){
       return date.replace('P', ' ')+' PM';
       }
+      if(date.includes('A')){
+        return date.replace('A', ' ')+' AM';
+        }
       return date;
   }
     render(){
       let minHoursMinutes = new HoursMinutes(this.props.condensedInstructions.minRouteTime);
         let maxHoursMinutes = new HoursMinutes(this.props.condensedInstructions.maxRouteTime);
          let fullSummary = `Min Dist:${this.props.condensedInstructions.minDistance.toFixed(1)} mi Max Dist:${this.props.condensedInstructions.maxDistance.toFixed(1)} mi Min Time:${minHoursMinutes.hours} hrs ${minHoursMinutes.minutes} min Max Time:${maxHoursMinutes.hours} hrs ${maxHoursMinutes.minutes} min`;
-       
-        let instructionRenders = linq.from(this.props.condensedInstructions.condensedInstructions).toArray().map(
+       let orderByStartTimes =linq.from(this.props.condensedInstructions.condensedInstructions).orderBy(i=> {
+         let orderby = new Date(this.fixAMPM(i.startTime)).valueOf();
+        return orderby;}).toArray();
+       if(orderByStartTimes[orderByStartTimes.length-1].location=="1500 Southwest 8th Street"){
+        console.log(JSON.stringify(orderByStartTimes));
+       } 
+       let instructionRenders = linq.from(this.props.condensedInstructions.condensedInstructions).orderBy(i=>new Date(this.fixAMPM(i.startTime)).valueOf()).toArray().map(
             (i) => {
               let loc;
               let place;

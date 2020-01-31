@@ -70,22 +70,30 @@ export class condensedInstructionSet{
   public minDistance:number;
   public maxDistance:number;
   public minRouteTime:number;
+  public numRiders:number;
   constructor(public condensedInstructions:condensedInstruction[], public  endLocationName:string, 
   public missedCities?:Array<missedCity>
   ){
     let agentNames = new Set<string>();
     var instructionsSetsLinq = Enumerable.from(condensedInstructions);
+    this.numRiders = instructionsSetsLinq.sum(i=>i.passengers);
     var instructionsByAgent = instructionsSetsLinq.groupBy(i=>i.agent);
+    if(condensedInstructions.length>0){
     this.maxRouteTime = instructionsByAgent.max(i=>(new dateDiff(new Date(i.last().startTime), new Date(i.first().startTime))).minutes());
     this.minRouteTime = instructionsByAgent.min(i=>(new dateDiff(new Date(i.last().startTime),new Date(i.first().startTime))).minutes());
     this.minDistance =instructionsByAgent.min(i=>i.sum(m=>m.miles));
     this.maxDistance =instructionsByAgent.max(i=>i.sum(m=>m.miles));
+    this.durationMinutes = this.calculateDuration();
+    }
+    else{
+      //this is the empty set
+      this.maxRouteTime=this.minRouteTime=this.maxDistance=this.minDistance=this.durationMinutes=0;
+    }
     for(let i = 0; i<condensedInstructions.length;i++){
       this.totalMiles+=condensedInstructions[i].miles;
       agentNames.add(condensedInstructions[i].agent);
     } 
     this.numAgents = agentNames.size;
-    this.durationMinutes = this.calculateDuration();
     this.condensedInstructions = Enumerable.from(condensedInstructions).orderBy(i=>i.startTime).toArray();
    }
   durationMinutes:number;
@@ -263,7 +271,8 @@ export class ItinineraryResponse implements IItinineraryResponse{
           console.log("Readjusting for end time: "+endTime);
           console.log("dateDiff:"+dateDiff);
           let diff:number =  new dateDiff(date, endTime).minutes()-1;
-          console.log(`Got difference between '${date}' and ${lastInstruction.startTime} as ${diff}`);
+          //TODO://One of the dates is getting passed in as a string, fix
+          console.log(`Got difference between '${date}' and '${lastInstruction.startTime}' as ${diff}`);
           condensedInstructionAgent.forEach(condensedInstruction=>{
             console.log(`Changing start time for instruction '${condensedInstruction.startTime}'`);
             console.log("Readjusting for instruction set:"+JSON.stringify(condensedInstruction));
@@ -280,6 +289,7 @@ export class ItinineraryResponse implements IItinineraryResponse{
             }
       });
   });
+  this.condensedInstructionSet.condensedInstructions = Enumerable.from(this.condensedInstructionSet.condensedInstructions).orderBy(i=>i.startTime).toArray();
   }
 }
 export class ItineraryRequest implements IItineraryRequest {

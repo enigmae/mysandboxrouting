@@ -54,6 +54,6 @@ export class BusCapacityControl extends React.Component<IBusCapacityControlProps
   
     } 
     static defaultProps = {
-        maxBuses:3
+        maxBuses:10
     } 
 }

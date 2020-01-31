@@ -28,7 +28,9 @@ interface IDisplayItinerariesState {
   BusCapacity:number,
   */Loading:boolean,
   CanSubmit:boolean,
-  BusCapacities?:Array<CapacityKey>
+  BusCapacities?:Array<CapacityKey>,
+  RallyLocationRiders?:ILocationRider[];
+  SearchCount:number;
 }
 export interface visibility{
   visibility:'visible'|'hidden';
@@ -49,7 +51,7 @@ export class LandingPageControl extends React.Component<
 
     this.state = { DwellTime: 15, Arrivaltime: this.initializeArrivalTime(), Loading:false,CanSubmit:false, Destination:{
       SearchQuery:'',
-    }};
+    }, SearchCount:0};
     this.handleDwellTimeChanged = this.handleDwellTimeChanged.bind(this);
     //this.handleSingleItinerarySearch = this.handleSingleItinerarySearch.bind(this);
     this.handleMultipleItinerarySearch = this.handleMultipleItinerarySearch.bind(this);
@@ -59,6 +61,7 @@ export class LandingPageControl extends React.Component<
     this.handleBusCapacitiesChanged = this.handleBusCapacitiesChanged.bind(this);
     this.handleRallyTripsRecieved = this.handleRallyTripsRecieved.bind(this);
   }
+  
   initializeArrivalTime(){
     let endOfToday = dateMath.endOf(new Date(),'day');
     let ninePm = dateMath.add(endOfToday, 20, "hours");
@@ -66,11 +69,16 @@ export class LandingPageControl extends React.Component<
     return dateMath.add(subtractDay, 1, "minutes");
   }
   handleRallyTripsRecieved(rallyTrips:rallyTrip[]){
-    this.setState({Arrivaltime:rallyTrips[0].Schedule.DestinationArrivalTime, 
+    this.setState({Arrivaltime:new Date(rallyTrips[0].Schedule.DestinationArrivalTime), 
       Destination:{
         SearchQuery:rallyTrips[0].Schedule.DestinationCity.CityStateAbbr,
-        SearchResult:rallyTrips[0].Schedule.DestinationCity.CityStateAbbr
-      }})
+        SearchResult:rallyTrips[0].Schedule.DestinationCity.CityStateAbbr,
+        Coords:{Lat:25.927490234375,Long:-80.2232437133789}
+      },
+      SearchCount:this.state.SearchCount+1,
+      CanSubmit:Enumerable.from(rallyTrips).any(i=>i.State.RidersBookedOnTrip>0),
+    RallyLocationRiders:Enumerable.from(rallyTrips).select(i=> 
+      { return {SearchResult:i.Schedule.OriginDepartureLocation ?i.Schedule.OriginDepartureLocation: i.Schedule.OriginCity.CityStateAbbr, NumRiders:i.State.RidersBookedOnTrip, Coords:{Lat:i.DerivedPickupLatLng.Lat, Long:i.DerivedPickupLatLng.Long}}}).toArray()});
   }
   itineraryCollection: ItineraryCollectionService;
   itinerary: IItineraryService;
@@ -90,7 +98,7 @@ export class LandingPageControl extends React.Component<
         <div>
           Enter destination:
           <div>
-          <EnterLocationControl
+          <EnterLocationControl key="Destination"
             SearchResult={this.state.Destination!}
             searchResultsChanged={this.handleDestinationChanged}
           /></div>
@@ -110,8 +118,8 @@ export class LandingPageControl extends React.Component<
       onChange={this.handleArrivalTimeChanged}
     />
     <BusCapacityControl handleBusCapacityChanged={this.handleBusCapacitiesChanged} />
-        <LocationRiderCollectionControl handleLocationRidersChanged={(e)=>this.handleLocationRidersChanged(e)}
-        />
+        <LocationRiderCollectionControl CollectionKey={'Landing_'+ this.state.SearchCount+'_'} handleLocationRidersChanged={(e)=>this.handleLocationRidersChanged(e)}
+        LocationRiders={this.state.RallyLocationRiders}/>
         <button  onClick={()=>this.handleSearchItineraries()} disabled={!this.state.CanSubmit}>Search</button>
        <div style={{visibility: this.state.Loading ? 'visible': 'hidden'}}>Loading...</div>
        <ItinerariesControl ItinerariesResponse={this.state.ItinerariesResponse}/>
@@ -203,7 +211,7 @@ export class LandingPageControl extends React.Component<
   }
   handleDestinationChanged(e: ISearchResult) {
     console.log("handle destination changed:" + JSON.stringify(e));
-    this.setState({ Destination: e });
+    this.setState({ Destination: e, SearchCount:this.state.SearchCount+1 });
   }
   handleDwellTimeChanged(event) {
     this.setState({ DwellTime: event.target.value });

@@ -11,7 +11,7 @@ export interface schedule{
     OriginCity:city;
     OriginDepartureLocation:string;
     DestinationCity:city;
-    DestinationArrivalTime:Date;
+    DestinationArrivalTime:string;
 }
 export interface state{
     RidersBookedOnTrip:number;

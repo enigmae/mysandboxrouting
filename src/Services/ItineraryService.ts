@@ -2,13 +2,15 @@ import * as request from "request-promise";
 import dateformat from 'dateformat';
 import {Semaphore} from 'await-semaphore';
 import { IItineraryService, getItineraryRequest, IItinineraryResponse, itineraryItem, ItineraryRequest, ItinineraryResponse } from "./itinerary";
+import Enumerable from "linq";
 
 
 export class ItineraryService implements IItineraryService {
-  semaphore = new Semaphore(7);
-  constructor(private key:string='ArLJodQ7fEaQ2dfy3lIHWJrJILC35_Qj0EpT8TCy3ls96pl6sqCdlu18bo8j_tbM'){
-    
-  }
+  semaphore = new Semaphore(25);
+  //constructor(private key:string='ArLJodQ7fEaQ2dfy3lIHWJrJILC35_Qj0EpT8TCy3ls96pl6sqCdlu18bo8j_tbM'){
+  //  constructor(private key:string='AqY5DsUaX9kUiNmpLaOZfzm6nV_wsCbyUfB_0z1Hk4CIUMNDjMSjk7VBSFIIgaHk'){
+constructor(private key:string='Agm6W2UbGpxQdxwdk3hJWc_7x3YkDMPA6nwX-7sZyYWuP-A96R8Cnc5BccClWQIK'){  
+}
   getYesterday():Date{
     var date = new Date();
     date.setDate(date.getDate()-1);
@@ -19,7 +21,7 @@ export class ItineraryService implements IItineraryService {
     date.setTime(date.getTime()+(hours*60*60*1000));
   }
   async getItinerary(getItineraryRequest: getItineraryRequest): Promise<IItinineraryResponse> {
-    var itineraryItems = getItineraryRequest.searchParams.map(sr => new itineraryItem(sr.SearchResult!, "00:" + getItineraryRequest.dwellTime + ":00", {
+    var itineraryItems = Enumerable.from(getItineraryRequest.searchParams).where(i=>i.Riders!>0).toArray().map(sr => new itineraryItem(sr.SearchResult!, "00:" + getItineraryRequest.dwellTime + ":00", {
       latitude: sr.Coords!.Lat,
       longitude: sr.Coords!.Long, 
     },[sr.Riders!]));
@@ -35,8 +37,8 @@ export class ItineraryService implements IItineraryService {
     var agents = new Array();
     var maxAgents = getItineraryRequest.numAgents;
     //TODO:Change for biz version
-    if(getItineraryRequest.numAgents>3){
-      maxAgents = 3;
+    if(getItineraryRequest.numAgents>10){
+      maxAgents = 10;
     }
     for(var agentCount=0; agentCount<maxAgents; agentCount++){
       agents.push({

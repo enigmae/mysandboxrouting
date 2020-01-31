@@ -34,7 +34,7 @@ export class ItineraryCollectionService implements IItineraryCollectionService{
     this.addExtraStops(getItinerariesRequest);
     let response = new Array<Promise<IItinineraryResponse>>();
     for(var numAgents = 1; numAgents<= getItinerariesRequest.busCapacities.length; numAgents++){
-    for (let result of getItinerariesRequest.searchResults) {
+    for (let result of Enumerable.from(getItinerariesRequest.searchResults).where(i=>i.Riders!>0)) {
       let startDate =new Date(2019,11,17,10,0);
       let endDate =new Date(2019,11,18,22,0);
       
@@ -62,7 +62,7 @@ export class ItineraryCollectionService implements IItineraryCollectionService{
       itineraries: Enumerable.from(responsesFiltered).
         where(i=>i.instructionSets!==undefined)
         .orderByDescending(i=>i.instructionSets.length)
-        .thenBy(i=>Enumerable.from( i.instructionSets).max(m=>m.durationMinutes)).select(i=>i).toArray()
+        .thenBy(i=>i.instructionSets.length>0 ? Enumerable.from( i.instructionSets).max(m=>m.durationMinutes): 0).select(i=>i).toArray()
   };
   return returnedValue;
 }
