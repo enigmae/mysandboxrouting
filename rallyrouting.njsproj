@@ -1,0 +1,110 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{39a1be97-aab9-41d3-aa4f-97b72b59eaae}</ProjectGuid>
+    <ProjectHome>.</ProjectHome>
+    <ProjectView>ProjectFiles</ProjectView>
+    <StartupFile>
+    </StartupFile>
+    <WorkingDirectory>.</WorkingDirectory>
+    <OutputPath>.</OutputPath>
+    <ProjectTypeGuids>{3AF33F2E-1136-4D97-BBB7-1795711AC8B8};{349c5851-65df-11da-9384-00065b846f21};{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}</ProjectTypeGuids>
+    <EnableTypeScript>true</EnableTypeScript>
+    <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">16.0</VisualStudioVersion>
+    <VSToolsPath Condition="'$(VSToolsPath)' == ''">$(MSBuildExtensionsPath32)\Microsoft\VisualStudio\v$(VisualStudioVersion)</VSToolsPath>
+    <StartWebBrowser>True</StartWebBrowser>
+    <JavaScriptTestFramework>mocha</JavaScriptTestFramework>
+    <SaveNodeJsSettingsInProjectFile>True</SaveNodeJsSettingsInProjectFile>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)' == 'Debug'" />
+  <PropertyGroup Condition="'$(Configuration)' == 'Release'" />
+  <ItemGroup>
+    <Content Include="libman.json" />
+    <Content Include="package.json" />
+    <None Include="tsconfig.json" />
+    <Content Include="build\index.html" />
+    <Content Include="build\asset-manifest.json" />
+    <Content Include="public\index.html" />
+    <Content Include="src\styles.css" />
+    <None Include="src\bing.ts" />
+    <None Include="src\react-app-env.d.ts" />
+    <None Include="src\index.tsx" />
+    <None Include="src\mapsContol.tsx" />
+    <None Include="tests\tsconfig.json" />
+    <None Include="tests\rallyService.test.ts" />
+    <None Include="tests\setupTests.ts" />
+    <Content Include="build\static\css\1.f5809923.chunk.css" />
+    <Content Include="build\static\css\main.8b8c11e4.chunk.css" />
+    <None Include="src\Controls\BusCapacityControl.tsx" />
+    <None Include="src\Controls\enterLocationControl.tsx" />
+    <None Include="src\Controls\instructionSummaryControl.tsx" />
+    <None Include="src\Controls\itinerariesControl.tsx" />
+    <None Include="src\Controls\itineraryInstructionsControl.tsx" />
+    <None Include="src\Controls\LandingPageControl.tsx" />
+    <None Include="src\Controls\locationRiderCollectionControl.tsx" />
+    <None Include="src\Controls\locationRiderControl.tsx" />
+    <None Include="src\Controls\RallyEventControl.tsx" />
+    <None Include="src\Services\itinerary.ts" />
+    <None Include="src\Services\ItineraryCollectionService.ts" />
+    <None Include="src\Services\ItineraryService.ts" />
+    <None Include="src\Services\rallyService.ts" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="build" />
+    <Folder Include="build\static" />
+    <Folder Include="build\static\css" />
+    <Folder Include="build\static\js" />
+    <Folder Include="coverage" />
+    <Folder Include="public" />
+    <Folder Include="rallyrouting" />
+    <Folder Include="src" />
+    <Folder Include="src\Controls" />
+    <Folder Include="src\Services" />
+    <Folder Include="tests" />
+  </ItemGroup>
+  <ItemGroup>
+    <TypeScriptCompile Include="src\Controls\itineraryInstructionsControl - Copy.tsx" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.Common.targets" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <Import Project="$(VSToolsPath)\Node.js Tools\Microsoft.NodejsToolsV2.targets" />
+  <ProjectExtensions>
+    <VisualStudio>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
+        <WebProjectProperties>
+          <UseIIS>False</UseIIS>
+          <AutoAssignPort>True</AutoAssignPort>
+          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerVPath>/</DevelopmentServerVPath>
+          <IISUrl>http://localhost:48022/</IISUrl>
+          <NTLMAuthentication>False</NTLMAuthentication>
+          <UseCustomServer>True</UseCustomServer>
+          <CustomServerUrl>http://localhost:1337</CustomServerUrl>
+          <SaveServerSettingsInUserFile>False</SaveServerSettingsInUserFile>
+        </WebProjectProperties>
+      </FlavorProperties>
+      <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}" User="">
+        <WebProjectProperties>
+          <StartPageUrl>
+          </StartPageUrl>
+          <StartAction>CurrentPage</StartAction>
+          <AspNetDebugging>True</AspNetDebugging>
+          <SilverlightDebugging>False</SilverlightDebugging>
+          <NativeDebugging>False</NativeDebugging>
+          <SQLDebugging>False</SQLDebugging>
+          <ExternalProgram>
+          </ExternalProgram>
+          <StartExternalURL>
+          </StartExternalURL>
+          <StartCmdLineArguments>
+          </StartCmdLineArguments>
+          <StartWorkingDirectory>
+          </StartWorkingDirectory>
+          <EnableENC>False</EnableENC>
+          <AlwaysStartWebServerOnDebug>False</AlwaysStartWebServerOnDebug>
+        </WebProjectProperties>
+      </FlavorProperties>
+    </VisualStudio>
+  </ProjectExtensions>
+</Project>

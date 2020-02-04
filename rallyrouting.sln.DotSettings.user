@@ -1,0 +1,6 @@
+﻿<wpf:ResourceDictionary xml:space="preserve" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:s="clr-namespace:System;assembly=mscorlib" xmlns:ss="urn:shemas-jetbrains-com:settings-storage-xaml" xmlns:wpf="http://schemas.microsoft.com/winfx/2006/xaml/presentation">
+	<s:Boolean x:Key="/Default/RunConfigs/Config/=A9F05B7F6B3FF64CB24DF247DED6F68E/@KeyIndexDefined">True</s:Boolean>
+	<s:String x:Key="/Default/RunConfigs/Config/=A9F05B7F6B3FF64CB24DF247DED6F68E/Type/@EntryValue">project</s:String>
+	<s:String x:Key="/Default/RunConfigs/Config/=A9F05B7F6B3FF64CB24DF247DED6F68E/Name/@EntryValue">rallyrouting</s:String>
+	<s:String x:Key="/Default/RunConfigs/Config/=A9F05B7F6B3FF64CB24DF247DED6F68E/ProjectGuid/@EntryValue">97BEA139B9AAD341AA4F97B72B59EAAE</s:String>
+	<s:String x:Key="/Default/RunConfigs/Active/@EntryValue">A9F05B7F6B3FF64CB24DF247DED6F68E</s:String></wpf:ResourceDictionary>

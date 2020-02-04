@@ -5,6 +5,9 @@ input {
   width: 300px;
   vertical-align: left;
 }
+.ItineraryViewType {
+    width: auto;
+}
 .Riders{
   width:20px
 }

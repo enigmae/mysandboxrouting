@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29519.87
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9092AA53-FB77-4645-B42D-1CCCA6BD08BD}") = "rallyrouting", "rallyrouting.njsproj", "{39A1BE97-AAB9-41D3-AA4F-97B72B59EAAE}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{39A1BE97-AAB9-41D3-AA4F-97B72B59EAAE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{39A1BE97-AAB9-41D3-AA4F-97B72B59EAAE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{39A1BE97-AAB9-41D3-AA4F-97B72B59EAAE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{39A1BE97-AAB9-41D3-AA4F-97B72B59EAAE}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {924DD3EA-3ACD-4D4F-AAA4-43EA0D9EC528}
+	EndGlobalSection
+EndGlobal

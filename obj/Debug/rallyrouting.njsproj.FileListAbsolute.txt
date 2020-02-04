@@ -1,0 +1,2 @@
+C:\Users\kayod\Documents\GitHub\mysandboxrouting\bin\Microsoft.NodejsTools.WebRole.dll
+C:\Users\kayod\Documents\GitHub\mysandboxrouting\obj\Debug\rallyrouting.njsprojAssemblyReference.cache
