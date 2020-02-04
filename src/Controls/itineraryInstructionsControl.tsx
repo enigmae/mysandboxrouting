@@ -28,6 +28,7 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
         this.state = { ViewType: ItineraryViewType.Arrival };
         this.renderByBus = this.renderByBus.bind(this);
         this.renderByArrival = this.renderByArrival.bind(this);
+        this.handleViewTypeChanged = this.handleViewTypeChanged.bind(this);
     }
     formatDate(date: string) {
         if (!date)
@@ -72,8 +73,8 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
                     location = <td>{i.location}</td>;
                     arrive = <td>{this.formatDate(i.startTime)}&nbsp;{this.formatTime(i.startTime)}</td>;
                     leave = <td>{i.endTime ? this.formatDate(i.endTime) : ''}&nbsp;{i.endTime
-                        ? this.formatTime(i.endTime)
-                        : ''}</td>;
+                                ? this.formatTime(i.endTime)
+                                : ''}</td>;
                     quantity = <td>{i.passengers}</td>;
                     miles = <td>{i.miles.toFixed(2)}</td>;
                     return <tr>{agent}{location}{arrive}{leave}{quantity}{miles}</tr>;
@@ -81,32 +82,30 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
             );
         return instructionRenders;
     }
+
     renderByBus() {
         let instructionRenders = linq.from(this.props.condensedInstructions.condensedInstructions)
-            .groupBy(i => i.agent).toArray().map(
-                (byBus) => {
-                    let enclose = <div>Bus: {byBus.key()}</div>;
-                    let byArrival = byBus.orderBy(i => new Date(this.fixAMPM(i.startTime)).valueOf()).toArray().map(i => {
-                        let quantity;
-                        let agent;
-                        let location;
-                        let arrive;
-                        let leave;
-                        let miles;
-                        agent = <td>{i.agent}</td>;
-                        location = <td>{i.location}</td>;
-                        arrive = <td>{this.formatDate(i.startTime)}&nbsp;{this.formatTime(i.startTime)}</td>;
-                        leave = <td>{i.endTime ? this.formatDate(i.endTime) : ''}&nbsp;{i.endTime
+            .orderBy(i => i.agent).thenBy(i => new Date(this.fixAMPM(i.startTime)).valueOf()).toArray().map(i => {
+                let quantity;
+                let agent;
+                let location;
+                let arrive;
+                let leave;
+                let miles;
+                agent = <td>{i.agent}</td>;
+                location = <td>{i.location}</td>;
+                arrive = <td>{this.formatDate(i.startTime)}&nbsp;{this.formatTime(i.startTime)}</td>;
+                leave = <td>{i.endTime ? this.formatDate(i.endTime) : ''}&nbsp;{i.endTime
                             ? this.formatTime(i.endTime)
                             : ''}</td>;
-                        quantity = <td>{i.passengers}</td>;
-                        miles = <td>{i.miles.toFixed(2)}</td>;
-                        return <tr>{agent}{location}{arrive}{leave}{quantity}{miles}</tr>;
-                    });
-                    return <span>{byArrival}</span>;
-                }
-            );
+                quantity = <td>{i.passengers}</td>;
+                miles = <td>{i.miles.toFixed(2)}</td>;
+                return <tr>{agent}{location}{arrive}{leave}{quantity}{miles}</tr>;
+            });
         return instructionRenders;
+    }
+    handleViewTypeChanged(e) {
+        this.setState({ViewType:e.target.value});
     }
     render() {
         let minHoursMinutes = new HoursMinutes(this.props.condensedInstructions.minRouteTime);
@@ -127,11 +126,11 @@ export class ItineraryInstructionsControl extends React.Component<InstructionCon
             <h3>{fullSummary}</h3>
             <div>
                 <h4>View By</h4>
-                <input className="ItineraryViewType" type="radio" name="arrival" value={this.state.ViewType} checked={this.state.ViewType ===
-                    ItineraryViewType.Arrival} onChange={this.handleArrivalViewTypeChanged} />Arrival<br />
-                <input className="ItineraryViewType" type="radio" name="bus" value={this.state.ViewType} checked={this.state.ViewType ===
-                    ItineraryViewType.Bus} onChange={this.handleBusViewTypeChanged} />Bus<br />
-            </div>
+                <select onChange={this.handleViewTypeChanged} value={this.state.ViewType}>
+                    <option value="Arrival" selected={true}>Arrival</option>
+                    <option value="Bus">Bus</option>
+                </select>
+                </div>
             <table>
                 <tr>
                     <th>Agent</th>
