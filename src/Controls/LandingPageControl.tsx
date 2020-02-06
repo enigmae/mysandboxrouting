@@ -13,7 +13,7 @@ import * as dateMath from 'date-arithmetic';
 import { ItinerariesControl } from "./itinerariesControl";
 import { ILocationRider } from "./locationRiderControl";
 import Enumerable from "linq";
-import { BusCapacityControl, CapacityKey } from "./BusCapacityControl";
+import { BusCapacityControl, CapacityKey, IBusCapacityControlState } from "./BusCapacityControl";
 import { RallyEventControl } from "./RallyEventControl";
 import { rallyTrip } from "../Services/rallyService";
 interface IDisplayItinerariesState {
@@ -26,9 +26,10 @@ interface IDisplayItinerariesState {
   /*MinBuses:number;
   MaxBuses:number;
   BusCapacity:number,
-  */Loading:boolean,
-  CanSubmit:boolean,
-  BusCapacities?:Array<CapacityKey>,
+  */Loading:boolean;
+  CanSubmit:boolean;
+    BusCapacities?: Array<CapacityKey>;
+    MinBuses:number;
   RallyLocationRiders?:ILocationRider[];
   SearchCount:number;
 }
@@ -49,7 +50,7 @@ export class LandingPageControl extends React.Component<
     this.itineraryCollection = new ItineraryCollectionService(this.itinerary);
     this.handleDestinationChanged = this.handleDestinationChanged.bind(this);
 
-    this.state = { DwellTime: 15, Arrivaltime: this.initializeArrivalTime(), Loading:false,CanSubmit:false, Destination:{
+    this.state = { DwellTime: 15, MinBuses:1,Arrivaltime: this.initializeArrivalTime(), Loading:false,CanSubmit:false, Destination:{
       SearchQuery:'',
     }, SearchCount:0};
     this.handleDwellTimeChanged = this.handleDwellTimeChanged.bind(this);
@@ -126,8 +127,8 @@ export class LandingPageControl extends React.Component<
       </div>
     )
   }
-  handleBusCapacitiesChanged(e){
-    this.setState({BusCapacities:e});
+    handleBusCapacitiesChanged(e: IBusCapacityControlState){
+    this.setState({BusCapacities:e.capacities, MinBuses:e.minBuses});
   }
   
   handleLocationRidersChanged(locationRiders:ILocationRider[]){
@@ -196,7 +197,8 @@ export class LandingPageControl extends React.Component<
       dwellTime: this.state.DwellTime!,
       searchResults: this.state.SearchResults!,
       endLocation: this.state.Destination!.Coords!,
-      endLocationName:this.state.Destination!.SearchResult!,
+        endLocationName: this.state.Destination!.SearchResult!, 
+      minBuses:this.state.MinBuses,
       busCapacities:Enumerable.from(this.state.BusCapacities!).select(i=>i.capacity).toArray()
     }) 
     .then((i: ItinerariesResponse) => {

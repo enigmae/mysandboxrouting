@@ -7,6 +7,7 @@ export interface ILocationRider {
     NumRiders?: number;
     Coords?: ILatLong;
     SearchQuery?: string;
+    Key?:string;
 }
 
 export interface ILocationRiderControlState extends ILocationRider {

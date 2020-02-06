@@ -249,7 +249,7 @@ export class ItinineraryResponse implements IItinineraryResponse{
   public citiesVisited:Array<string>;
   public citiesMissed:Array<missedCity>;
 
-  constructor(public resourceSets: resourceSet[], public destinationName:string){
+  constructor(public resourceSets: resourceSet[], public destinationName:string, public request:getItineraryRequest){
     this.instructionSets = Enumerable.from(this.resourceSets[0].resources[0].agentItineraries).where(i=>i.instructions.length>3).toArray()
     .map(i=> {
           return new instructionSet(i, destinationName);
@@ -305,7 +305,8 @@ export interface getItineraryRequest {
   dwellTime: number;
   startTime?:Date;
   endTime?:Date;
-  numAgents:number;
+    numAgents: number;
+    minNumAgents:number;
   endLocationName:string;
   busCapacities:Array<number>
 }
@@ -319,7 +320,7 @@ export interface ItinerariesRequest {
   endLocation: ILatLong;
   endLocationName:string;
   dwellTime: number;
-  //minBuses?:number;
+  minBuses:number;
   //maxBuses?:number;
   //busCapacity?:number;
   busCapacities:Array<number>

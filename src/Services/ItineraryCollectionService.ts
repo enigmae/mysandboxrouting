@@ -1,6 +1,7 @@
 import * as Enumerable from 'linq';
 import { IItineraryService, ItinerariesRequest, ItinerariesResponse, IItinineraryResponse } from "./itinerary";
 import { ISearchParam, ISearchResult } from '../Controls/enterLocationControl';
+import request from 'request';
 export interface IItineraryCollectionService{
   getItineraries(getItinerariesRequest: ItinerariesRequest): Promise<ItinerariesResponse>;
 } 
@@ -33,12 +34,12 @@ export class ItineraryCollectionService implements IItineraryCollectionService{
   async getItineraries(getItinerariesRequest: ItinerariesRequest): Promise<ItinerariesResponse> {
     this.addExtraStops(getItinerariesRequest);
     let response = new Array<Promise<IItinineraryResponse>>();
-    for(var numAgents = 1; numAgents<= getItinerariesRequest.busCapacities.length; numAgents++){
+    for(var numAgents = getItinerariesRequest.minBuses; numAgents<= getItinerariesRequest.busCapacities.length; numAgents++){
     for (let result of Enumerable.from(getItinerariesRequest.searchResults).where(i=>i.Riders!>0)) {
       let startDate =new Date(2019,11,17,10,0);
       let endDate =new Date(2019,11,18,22,0);
       
-      let itinerary = this.itinerary.getItinerary({numAgents:numAgents,endLocationName:getItinerariesRequest.endLocationName,
+      let itinerary = this.itinerary.getItinerary({numAgents:numAgents,minNumAgents:getItinerariesRequest.minBuses,endLocationName:getItinerariesRequest.endLocationName,
         startLocation: result.Coords!, searchParams: getItinerariesRequest.searchResults,
         dwellTime: getItinerariesRequest.dwellTime, endLocation: getItinerariesRequest.endLocation,
         startTime:result.StartTime, endTime:result.EndTime, busCapacities:getItinerariesRequest.busCapacities

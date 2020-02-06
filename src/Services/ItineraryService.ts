@@ -41,7 +41,7 @@ export class ItineraryService implements IItineraryService {
     if(getItineraryRequest.numAgents>10){
       maxAgents = 10;
     }
-    for(var agentCount=0; agentCount<maxAgents; agentCount++){
+    for(var agentCount=0; agentCount<getItineraryRequest.numAgents; agentCount++){
       agents.push({
           capacity:[getItineraryRequest.busCapacities[agentCount]],
           name: 'Bus_'+(agentCount+1),
@@ -98,10 +98,10 @@ export class ItineraryService implements IItineraryService {
     wait = setTimeout(onTimeout, callbackTimeout*1000);
     });
      return promiseGetResponse.then(i=> {
-       return new ItinineraryResponse((<IItinineraryResponse>JSON.parse(result)).resourceSets, getItineraryRequest.endLocationName);
+       return new ItinineraryResponse((<IItinineraryResponse>JSON.parse(result)).resourceSets, getItineraryRequest.endLocationName, getItineraryRequest);
      }).finally(()=> release());
     }
    release();
-    return new ItinineraryResponse((<IItinineraryResponse>result).resourceSets, getItineraryRequest.endLocationName);
+    return new ItinineraryResponse((<IItinineraryResponse>result).resourceSets, getItineraryRequest.endLocationName, getItineraryRequest);
   }
 }
