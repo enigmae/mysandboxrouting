@@ -79,7 +79,7 @@ export class LandingPageControl extends React.Component<
       SearchCount:this.state.SearchCount+1,
       CanSubmit:Enumerable.from(rallyTrips).any(i=>i.State.RidersBookedOnTrip>0),
     RallyLocationRiders:Enumerable.from(rallyTrips).select(i=> 
-      { return {SearchResult:i.Schedule.OriginDepartureLocation ?i.Schedule.OriginDepartureLocation: i.Schedule.OriginCity.CityStateAbbr, NumRiders:i.State.RidersBookedOnTrip, Coords:{Lat:i.DerivedPickupLatLng.Lat, Long:i.DerivedPickupLatLng.Long}}}).toArray()});
+      { return {SearchResult:i.Schedule.OriginDepartureLocation ?i.Schedule.OriginDepartureLocation+', '+i.Schedule.OriginCity.CityStateAbbr: i.Schedule.OriginCity.CityStateAbbr, NumRiders:i.State.RidersBookedOnTrip, Coords:{Lat:i.DerivedPickupLatLng.Lat, Long:i.DerivedPickupLatLng.Long}}}).toArray()});
   }
   itineraryCollection: ItineraryCollectionService;
   itinerary: IItineraryService;
