@@ -61,7 +61,7 @@ export class ItineraryService implements IItineraryService {
           ]
         });
     }
-    
+    var itineraryRequest = new ItineraryRequest(agents, itineraryItems);
    /* var result = await request.post("https://dev.virtualearth.net/REST/V1/Routes/OptimizeItinerary?key="+this.key, {
       resolveWithFullResponse: false,
       json: new ItineraryRequest(agents, itineraryItems)
@@ -69,7 +69,7 @@ export class ItineraryService implements IItineraryService {
     var release = await this.semaphore.acquire();
      var result = await request.post("https://dev.virtualearth.net/REST/V1/Routes/OptimizeItineraryAsync?key="+this.key, {
       resolveWithFullResponse: false,
-      json: new ItineraryRequest(agents, itineraryItems)
+      json: itineraryRequest
     });
     var itineraryResponse = (<IItinineraryResponse>result);
      console.log(JSON.stringify(itineraryResponse));
@@ -98,10 +98,10 @@ export class ItineraryService implements IItineraryService {
     wait = setTimeout(onTimeout, callbackTimeout*1000);
     });
      return promiseGetResponse.then(i=> {
-       return new ItinineraryResponse((<IItinineraryResponse>JSON.parse(result)).resourceSets, getItineraryRequest.endLocationName, getItineraryRequest);
+       return new ItinineraryResponse((<IItinineraryResponse>JSON.parse(result)).resourceSets, getItineraryRequest.endLocationName, getItineraryRequest, itineraryRequest);
      }).finally(()=> release());
     }
    release();
-    return new ItinineraryResponse((<IItinineraryResponse>result).resourceSets, getItineraryRequest.endLocationName, getItineraryRequest);
+    return new ItinineraryResponse((<IItinineraryResponse>result).resourceSets, getItineraryRequest.endLocationName, getItineraryRequest, itineraryRequest);
   }
 }

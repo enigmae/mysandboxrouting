@@ -1,10 +1,12 @@
 import * as React from 'react';
-import { instructionSet, condensedInstructionSet } from '../Services/itinerary';
+import { instructionSet, condensedInstructionSet, getItineraryRequest, ItineraryRequest } from '../Services/itinerary';
 import { totalmem } from 'os';
 import { ItineraryInstructionsControl } from './itineraryInstructionsControl';
 import Collapsible from 'react-collapsible';
 export interface IInstructionSummaryControlProps{
     condensedInstructionSet:condensedInstructionSet;
+    request?:getItineraryRequest;
+    itineraryRequest?:ItineraryRequest;
 }
 export interface IInstructionSummaryControlState{
     collapsed?:boolean;

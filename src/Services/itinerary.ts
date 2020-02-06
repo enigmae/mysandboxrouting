@@ -109,7 +109,9 @@ export class condensedInstructionSet{
   this.condensedInstructions.map(i=> this.adjustTimeFormat(i));
    return this.calcMinutes();
   }
-  
+  get key(){
+    return this.totalMiles+'_'+this.numAgents+'_'+this.numRiders;
+  }
 }
 
 /*
@@ -242,6 +244,8 @@ export interface IItinineraryResponse {
   instructionSets:instructionSet[];
   readjustForArrival(date:Date);
   condensedInstructionSet:condensedInstructionSet;
+  request:getItineraryRequest;
+  itineraryRequest:ItineraryRequest;
 }
 export class ItinineraryResponse implements IItinineraryResponse{
   public instructionSets:instructionSet[];
@@ -249,7 +253,7 @@ export class ItinineraryResponse implements IItinineraryResponse{
   public citiesVisited:Array<string>;
   public citiesMissed:Array<missedCity>;
 
-  constructor(public resourceSets: resourceSet[], public destinationName:string, public request:getItineraryRequest){
+  constructor(public resourceSets: resourceSet[], public destinationName:string, public request:getItineraryRequest, public itineraryRequest:ItineraryRequest){
     this.instructionSets = Enumerable.from(this.resourceSets[0].resources[0].agentItineraries).where(i=>i.instructions.length>3).toArray()
     .map(i=> {
           return new instructionSet(i, destinationName);

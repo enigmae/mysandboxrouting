@@ -84,16 +84,7 @@ export class LandingPageControl extends React.Component<
   itineraryCollection: ItineraryCollectionService;
   itinerary: IItineraryService;
   render() {
-    let responseList;
-    if (
-      this.state &&
-      this.state.ItinerariesResponse
-    ){
-      //TODO:Break this out into it's own control
-      let instructionList  = this.state.ItinerariesResponse.itineraries.map(m=>
-     <li><InstructionSummaryControl condensedInstructionSet = {m.condensedInstructionSet}/></li>);
-      responseList = <ol>{instructionList}</ol>;
-    }
+    
     return (<div>
       <RallyEventControl rallyTripReceived={this.handleRallyTripsRecieved}/>
         <div>
@@ -204,6 +195,7 @@ export class LandingPageControl extends React.Component<
     .then((i: ItinerariesResponse) => {
       this.setState({ ItinerariesResponse: i });
       i.itineraries.forEach(it=>{it.instructionSets.forEach(is=>{
+        
         this.searchResultHashmap[is.startingPoint] = is.durationMinutes;
       });});
     }).then(()=>{

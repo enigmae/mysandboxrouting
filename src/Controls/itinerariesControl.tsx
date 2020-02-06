@@ -1,6 +1,6 @@
 import * as React from "react";
 import * as dateMath from "date-arithmetic";
-import { ItinerariesResponse } from "../Services/itinerary";
+import { ItinerariesResponse, IItinineraryResponse } from "../Services/itinerary";
 import { InstructionSummaryControl } from "./instructionSummaryControl";
 
 interface ItinerariesControlState {
@@ -29,7 +29,16 @@ export class ItinerariesControl extends React.Component<ItinerariesControlProps,
         if (!this.props.ItinerariesResponse)
             return <div/>;
         let responseList: Object;
-        const instructionList = this.props.ItinerariesResponse.itineraries.map(m =>
+        var filteredItineraries:{[id:string]:IItinineraryResponse} = {};
+        var values = new Array<IItinineraryResponse>();
+        this.props.ItinerariesResponse.itineraries.forEach(i=>{
+          if(filteredItineraries[i.condensedInstructionSet.key]){
+            return;
+          }
+          values.push(i);
+          filteredItineraries[i.condensedInstructionSet.key] = i;
+        });
+        const instructionList = values.map(m =>
             <li>
                 <InstructionSummaryControl condensedInstructionSet={m.condensedInstructionSet}/>
             </li>);
